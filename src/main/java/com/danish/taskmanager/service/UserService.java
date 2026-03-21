@@ -23,22 +23,20 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
 
-    public User findUser(int userId) {
-        Optional<User> userbyId = userRepository.findById(userId);
-        User user = null;
-        if (userbyId.isPresent()) {
-            user = userbyId.get();
+    public User findUser(int userID) {
+        Optional<User> userByID = userRepository.findById(userID);
+
+        if (userByID.isPresent()) {
+            return userByID.get();
         } else {
-            // exception handling
+            throw new NoSuchElementException("User with ID " + userID + " not found");
         }
 
-        return user;
     }
 
     public UserResponseDTO addUser(UserRequestDTO dto) {
@@ -48,17 +46,14 @@ public class UserService {
         return toDTO(saveUser);
 
     }
-    public User deleteUser(int userID){
+
+    public User deleteUser(int userID) {
         Optional<User> userByID = userRepository.findById(userID);
-        if (userByID.isPresent()){
+        if (userByID.isPresent()) {
             userRepository.delete(userByID.get());
             return userByID.get();
+        } else {
+            throw new NoSuchElementException("User with ID " + userID + " not found");
         }
-        else {
-            throw new NoSuchElementException("User not found to delete");
-        }
-
-
     }
-
 }
