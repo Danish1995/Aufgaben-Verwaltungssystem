@@ -1,6 +1,7 @@
 package com.danish.taskmanager.controller;
 
 import com.danish.taskmanager.dto.UserRequestDTO;
+import com.danish.taskmanager.dto.UserResponseDTO;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +22,24 @@ public class UserController {
         return userService.findAll();
     }
 
-    @GetMapping("/users/{userId}")
-    public User getSingleUser(@PathVariable int userId) {
-        return userService.findUser(userId);
+    @GetMapping("/users/{userID}")
+    public User getSingleUser(@PathVariable int userID) {
+        return userService.findUser(userID);
     }
 
 
     @PostMapping("/users")
-    public User addUser(@RequestBody UserRequestDTO dto) {
+    public UserResponseDTO addUser(@RequestBody UserRequestDTO dto) {
 
         return userService.addUser(dto);
     }
+
+    @DeleteMapping("users/{userID}")
+    public User deleteUser(@PathVariable int userID){
+
+        return userService.deleteUser(userID);
+    }
+
 
 
 }

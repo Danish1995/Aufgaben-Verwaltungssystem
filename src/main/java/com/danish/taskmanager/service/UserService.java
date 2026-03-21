@@ -1,12 +1,17 @@
 package com.danish.taskmanager.service;
 
 import com.danish.taskmanager.dto.UserRequestDTO;
+import com.danish.taskmanager.dto.UserResponseDTO;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import static com.danish.taskmanager.mapper.UserMapper.toDTO;
+import static com.danish.taskmanager.mapper.UserMapper.toEntity;
 
 @Service
 public class UserService {
@@ -36,14 +41,22 @@ public class UserService {
         return user;
     }
 
-    public User addUser(UserRequestDTO dto) {
+    public UserResponseDTO addUser(UserRequestDTO dto) {
 
-        User user = new User();
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setRole(User.Role.valueOf(dto.getRole().toUpperCase()));
+        User saveUser = userRepository.save(toEntity(dto));
 
-        return userRepository.save(user);
+        return toDTO(saveUser);
+
+    }
+    public User deleteUser(int userID){
+        Optional<User> userByID = userRepository.findById(userID);
+        if (userByID.isPresent()){
+            userRepository.delete(userByID.get());
+            return userByID.get();
+        }
+        else {
+            throw new NoSuchElementException("User not found to delete");
+        }
 
 
     }
