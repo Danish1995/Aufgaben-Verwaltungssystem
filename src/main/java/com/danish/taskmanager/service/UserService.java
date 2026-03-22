@@ -56,4 +56,16 @@ public class UserService {
             throw new NoSuchElementException("User with ID " + userID + " not found");
         }
     }
+
+    public UserResponseDTO updateUser(int userID, UserRequestDTO userRequestDTO) {
+
+        User userByID = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User with ID " + userID + " not found"));
+        userByID.setName(userRequestDTO.getName());
+        userByID.setEmail(userRequestDTO.getEmail());
+        userRepository.save(userByID);
+
+        return toDTO(userByID);
+
+
+    }
 }

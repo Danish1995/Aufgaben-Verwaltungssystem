@@ -40,5 +40,11 @@ public class UserController {
         return userService.deleteUser(userID);
     }
 
+    @PutMapping("/users/{userID}")
+    public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {
+
+        return userService.updateUser(userID, dto);
+    }
+
 
 }
