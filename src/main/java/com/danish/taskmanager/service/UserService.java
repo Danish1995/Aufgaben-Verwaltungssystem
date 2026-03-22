@@ -6,6 +6,7 @@ import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -23,8 +24,15 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> findAll() {
+        List<User> all = userRepository.findAll();
+        List<UserResponseDTO> userDto = new ArrayList<>();
+
+        for (User user : all) {
+            userDto.add(toDTO(user));
+        }
+
+        return userDto;
     }
 
 

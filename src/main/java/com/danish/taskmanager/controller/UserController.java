@@ -4,11 +4,13 @@ import com.danish.taskmanager.dto.UserRequestDTO;
 import com.danish.taskmanager.dto.UserResponseDTO;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.service.UserService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 public class UserController {
 
     UserService userService;
@@ -17,9 +19,23 @@ public class UserController {
         this.userService = userService;
     }
 
+//    @GetMapping("/users")
+//    public List<UserResponseDTO> getAllUsers() {
+//        return userService.findAll();
+//    }
+
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.findAll();
+    public String getAllUsers(Model model) {
+        List<UserResponseDTO> allUsers = userService.findAll();
+        model.addAttribute("users", allUsers);
+        return "list-users";
+    }
+
+    @GetMapping("/registerUserForm")
+    public String addEmployees(Model model) {
+        UserRequestDTO newUser = new UserRequestDTO();
+        model.addAttribute("adduser", newUser);
+        return "user-form";
     }
 
     @GetMapping("/users/{userID}")
@@ -29,9 +45,11 @@ public class UserController {
 
 
     @PostMapping("/users")
-    public UserResponseDTO addUser(@RequestBody UserRequestDTO dto) {
+    public String addUser(UserRequestDTO dto) {
+        // Spring automatically creates a UserRequestDTO object and fills it field by field:
 
-        return userService.addUser(dto);
+        userService.addUser(dto);
+        return "redirect:/users";
     }
 
     @DeleteMapping("users/{userID}")
