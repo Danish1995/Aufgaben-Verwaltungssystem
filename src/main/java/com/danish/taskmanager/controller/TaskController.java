@@ -1,9 +1,10 @@
 package com.danish.taskmanager.controller;
 
+import com.danish.taskmanager.entity.Task;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.repository.UserRepository;
-import org.springframework.scheduling.config.Task;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
