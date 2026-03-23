@@ -24,6 +24,23 @@ public class UserController {
 //        return userService.findAll();
 //    }
 
+
+    /* When a client requests to get all users, a request is sent to the controller endpoint. The controller handles this
+    request and calls the corresponding service method. The service layer then interacts with the repository layer by
+    invoking the findAll() method to fetch all user records from the database.
+
+    The repository returns a list of entity objects to the service layer. In the service, these entities are not returned
+    directly. Instead, each entity is converted into a UserResponseDTO, and all DTOs are collected into a list. This step
+    is important for data security and abstraction, as it prevents exposing internal database structures or sensitive
+    fields to higher layers.
+
+    The service then returns the list of DTOs to the controller. The controller adds this list to the Model as an attribute
+    and returns the name of a Thymeleaf template (HTML page).
+
+    Finally, in the Thymeleaf view, the list of DTOs is accessed using the model attribute. The template iterates over
+        this list and displays the required fields using DTO properties, rendering the data to the client in a
+    structured HTML format.*/
+
     @GetMapping("/users")
     public String getAllUsers(Model model) {
         List<UserResponseDTO> allUsers = userService.findAll();
@@ -52,10 +69,10 @@ public class UserController {
         return "redirect:/users";
     }
 
-    @DeleteMapping("users/{userID}")
-    public User deleteUser(@PathVariable int userID) {
-
-        return userService.deleteUser(userID);
+    @GetMapping("users/delete/{userID}")
+    public String deleteUser(@PathVariable int userID) {
+        userService.deleteUser(userID);
+        return "redirect:/users";
     }
 
     @PutMapping("/users/{userID}")
