@@ -69,11 +69,17 @@ public class UserController {
         return "redirect:/users";
     }
 
-    @GetMapping("users/delete/{userID}")
+    @DeleteMapping("users/{userID}")
     public String deleteUser(@PathVariable int userID) {
         userService.deleteUser(userID);
         return "redirect:/users";
     }
+
+//    @GetMapping("users/delete/{userID}")
+//    public String deleteUser(@PathVariable int userID) {
+//        userService.deleteUser(userID);
+//        return "redirect:/users";
+//    }
 
     @PutMapping("/users/{userID}")
     public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {

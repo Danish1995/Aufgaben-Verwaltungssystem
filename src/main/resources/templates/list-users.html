@@ -38,16 +38,22 @@
             <td th:text="${singleUser.email}"/>
             <td>
                 <a th:href="@{/user(userID=${singleUser.id})}"
-                   class="btn btn-primary btn-sm mb-3">
+                   class="btn btn-primary btn-sm me-2">
                     Update
                 </a>
                 <!--  Sends a GET request so we need to use GetMapping to delete id not DeleteMapping-->
-                <a th:href="@{/users/delete/{id}(id=${singleUser.id})}"
+                <!--<a th:href="@{/users/delete/{id}(id=${singleUser.id})}" </a> is replace with form so we can use
+                     actual delete API in spring-->
 
-                   class="btn btn-primary btn-sm mb-3">
-                    Delete
-                </a>
+                <form th:action="@{/users/{id}(id=${singleUser.id})}" method="post" style="display:inline;" >
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </form>
             </td>
+
+
         </tr>
         </tbody>
     </table>
