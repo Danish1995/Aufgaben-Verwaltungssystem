@@ -70,6 +70,7 @@ public class UserService {
         User userByID = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User with ID " + userID + " not found"));
         userByID.setName(userRequestDTO.getName());
         userByID.setEmail(userRequestDTO.getEmail());
+        userByID.setRole(User.Role.valueOf(userRequestDTO.getRole()));
         userRepository.save(userByID);
 
         return toDTO(userByID);
