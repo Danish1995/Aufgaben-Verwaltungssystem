@@ -26,11 +26,16 @@
           th:object="${adduser}" method="POST">
         <!--    <input type="hidden" th:field="*{id}">-->
 
+        <input type="hidden" th:if="*{id != null}" th:field="*{id}">
         <input type="text" th:field="*{name}"
                class="form-control mb-4 w-25" placeholder="First name">
 
-        <input type="text" th:field="*{role}"
-               class="form-control mb-4 w-25" placeholder="Role">
+        <select th:field="*{role}" class="form-control mb-4 w-25">
+            <option value="">Select Role</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="MEMBER">MEMBER</option>
+            <option value="MANAGER">MANAGER</option>
+        </select>
 
         <input type="text" th:field="*{email}"
                class="form-control mb-4 w-25" placeholder="Email">

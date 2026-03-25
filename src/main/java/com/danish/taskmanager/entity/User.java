@@ -20,6 +20,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
+
     private String name;
 
     @Column(nullable = false, unique = true)
@@ -98,6 +99,7 @@ public class User {
 
     public enum Role {
         ADMIN,
-        MEMBER
+        MEMBER,
+        MANAGER
     }
 }

@@ -1,18 +1,36 @@
 package com.danish.taskmanager.dto;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 @Getter
 @Setter
 public class UserRequestDTO {
 
+    // to avoid null id error used wrapper class because for create it need to send null id
+    private Integer id;
+
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @Email(message = "Invalid email")
+    @NotBlank(message = "Email is required")
     private String email;
     private String role;
 
     public String getEmail() {
         return email;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public void setEmail(String email) {

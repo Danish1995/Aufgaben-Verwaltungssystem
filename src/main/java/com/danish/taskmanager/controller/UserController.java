@@ -2,10 +2,11 @@ package com.danish.taskmanager.controller;
 
 import com.danish.taskmanager.dto.UserRequestDTO;
 import com.danish.taskmanager.dto.UserResponseDTO;
-import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,20 +57,32 @@ public class UserController {
     }
 
     @GetMapping("/users/{userID}")
-    public User getSingleUser(@PathVariable int userID) {
-        return userService.findUser(userID);
+    public String getSingleUser(@PathVariable int userID, Model model) {
+        UserResponseDTO userResponseDTO = userService.findUser(userID);
+        model.addAttribute("adduser", userResponseDTO);
+        return "user-form";
     }
 
 
     @PostMapping("/users")
-    public String addUser(UserRequestDTO dto) {
+    public String addUser(@Valid UserRequestDTO dto, BindingResult result, Model model) {
         // Spring automatically creates a UserRequestDTO object and fills it field by field:
 
-        userService.addUser(dto);
+        if (result.hasErrors()) {
+            model.addAttribute("adduser", dto);
+            return "user-form"; // Stay on the same page
+        }
+        if (dto.getId() == null) {
+            userService.addUser(dto);
+        } else {
+            userService.updateUser(dto.getId(), dto);
+        }
+
+
         return "redirect:/users";
     }
 
-    @DeleteMapping("users/{userID}")
+    @DeleteMapping("users/delete/{userID}")
     public String deleteUser(@PathVariable int userID) {
         userService.deleteUser(userID);
         return "redirect:/users";
@@ -81,7 +94,7 @@ public class UserController {
 //        return "redirect:/users";
 //    }
 
-    @PutMapping("/users/{userID}")
+    @PutMapping("/users/update/{userID}")
     public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {
 
         return userService.updateUser(userID, dto);

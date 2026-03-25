@@ -36,11 +36,11 @@ public class UserService {
     }
 
 
-    public User findUser(int userID) {
+    public UserResponseDTO findUser(int userID) {
         Optional<User> userByID = userRepository.findById(userID);
 
         if (userByID.isPresent()) {
-            return userByID.get();
+            return toDTO(userByID.get());
         } else {
             throw new NoSuchElementException("User with ID " + userID + " not found");
         }
@@ -65,7 +65,7 @@ public class UserService {
         }
     }
 
-    public UserResponseDTO updateUser(int userID, UserRequestDTO userRequestDTO) {
+    public UserResponseDTO updateUser(Integer userID, UserRequestDTO userRequestDTO) {
 
         User userByID = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User with ID " + userID + " not found"));
         userByID.setName(userRequestDTO.getName());

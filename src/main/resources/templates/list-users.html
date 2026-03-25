@@ -23,9 +23,10 @@
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
         <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>ID</th>
+            <th>Name</th>
             <th>Email</th>
+            <th>ROLE</th>
             <th>Action</th>
         </tr>
         </thead>
@@ -36,8 +37,9 @@
             <td th:text="${singleUser.id}"/>
             <td th:text="${singleUser.name}"/>
             <td th:text="${singleUser.email}"/>
+            <td th:text="${singleUser.role}"/>
             <td>
-                <a th:href="@{/user(userID=${singleUser.id})}"
+                <a th:href="@{/users/{id}(id=${singleUser.id})}"
                    class="btn btn-primary btn-sm me-2">
                     Update
                 </a>
@@ -45,7 +47,7 @@
                 <!--<a th:href="@{/users/delete/{id}(id=${singleUser.id})}" </a> is replace with form so we can use
                      actual delete API in spring-->
 
-                <form th:action="@{/users/{id}(id=${singleUser.id})}" method="post" style="display:inline;" >
+                <form th:action="@{/users/delete/{id}(id=${singleUser.id})}" method="post" style="display:inline;" >
                     <input type="hidden" name="_method" value="delete"/>
                     <button type="submit" class="btn btn-danger btn-sm">
                         Delete
