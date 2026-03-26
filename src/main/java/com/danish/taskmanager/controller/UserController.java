@@ -59,7 +59,7 @@ public class UserController {
 
 
     @PostMapping("/users")
-    public String addUser(@Valid @ModelAttribute("adduser") UserRequestDTO dto, BindingResult result, Model model) {
+    public String addUser(@Valid @ModelAttribute("adduser") UserRequestDTO dto, BindingResult result) {
         // Spring automatically creates a UserRequestDTO object and fills it field by field:
         //@ModelAttribute = binding + validation + model (FULL integration)
 
