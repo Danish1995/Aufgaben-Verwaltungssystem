@@ -71,6 +71,8 @@ public class UserService {
         userByID.setName(userRequestDTO.getName());
         userByID.setEmail(userRequestDTO.getEmail());
         userByID.setRole(User.Role.valueOf(userRequestDTO.getRole()));
+        /* call save(userByID): JPA sees ID is not null + entity exists So UPDATE is called, not INSERT
+         */
         userRepository.save(userByID);
 
         return toDTO(userByID);

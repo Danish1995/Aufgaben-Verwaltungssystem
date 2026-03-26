@@ -13,12 +13,16 @@ public class UserRequestDTO {
     // to avoid null id error used wrapper class because for create it need to send null id
     private Integer id;
 
+    //Validations (DTO → define rules HTML (Thymeleaf) → bind + show errors Controller → trigger validation)
+
     @NotBlank(message = "Name is required")
     private String name;
 
     @Email(message = "Invalid email")
     @NotBlank(message = "Email is required")
     private String email;
+
+    @NotBlank(message = "Role is required")
     private String role;
 
     public String getEmail() {

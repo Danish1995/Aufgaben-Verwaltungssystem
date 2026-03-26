@@ -20,12 +20,6 @@ public class UserController {
         this.userService = userService;
     }
 
-//    @GetMapping("/users")
-//    public List<UserResponseDTO> getAllUsers() {
-//        return userService.findAll();
-//    }
-
-
     /* When a client requests to get all users, a request is sent to the controller endpoint. The controller handles this
     request and calls the corresponding service method. The service layer then interacts with the repository layer by
     invoking the findAll() method to fetch all user records from the database.
@@ -65,11 +59,11 @@ public class UserController {
 
 
     @PostMapping("/users")
-    public String addUser(@Valid UserRequestDTO dto, BindingResult result, Model model) {
+    public String addUser(@Valid @ModelAttribute("adduser") UserRequestDTO dto, BindingResult result, Model model) {
         // Spring automatically creates a UserRequestDTO object and fills it field by field:
+        //@ModelAttribute = binding + validation + model (FULL integration)
 
         if (result.hasErrors()) {
-            model.addAttribute("adduser", dto);
             return "user-form"; // Stay on the same page
         }
         if (dto.getId() == null) {
@@ -77,7 +71,6 @@ public class UserController {
         } else {
             userService.updateUser(dto.getId(), dto);
         }
-
 
         return "redirect:/users";
     }
@@ -88,17 +81,10 @@ public class UserController {
         return "redirect:/users";
     }
 
-//    @GetMapping("users/delete/{userID}")
-//    public String deleteUser(@PathVariable int userID) {
-//        userService.deleteUser(userID);
-//        return "redirect:/users";
-//    }
-
     @PutMapping("/users/update/{userID}")
     public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {
 
         return userService.updateUser(userID, dto);
     }
-
 
 }
