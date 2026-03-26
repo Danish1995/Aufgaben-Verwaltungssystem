@@ -24,6 +24,10 @@
 
     <form th:action="@{/users}" th:object="${adduser}" method="POST" class="w-50">
 
+
+        <!-- ID -->
+        <input type="hidden" th:if="*{id != null}" th:field="*{id}">
+
         <!-- NAME -->
         <div class="mb-3">
             <input type="text" th:field="*{name}"
