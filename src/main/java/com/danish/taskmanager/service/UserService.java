@@ -3,6 +3,7 @@ package com.danish.taskmanager.service;
 import com.danish.taskmanager.dto.UserRequestDTO;
 import com.danish.taskmanager.dto.UserResponseDTO;
 import com.danish.taskmanager.entity.User;
+import com.danish.taskmanager.exception.AppException;
 import com.danish.taskmanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,11 @@ public class UserService {
         if (userByID.isPresent()) {
             return toDTO(userByID.get());
         } else {
-            throw new NoSuchElementException("User with ID " + userID + " not found");
+            throw new AppException(
+                    "User Not Found",
+                    "No Registered User With this Email",
+                    400
+            );
         }
 
     }

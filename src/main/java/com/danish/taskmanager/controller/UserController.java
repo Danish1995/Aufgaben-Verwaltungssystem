@@ -2,6 +2,7 @@ package com.danish.taskmanager.controller;
 
 import com.danish.taskmanager.dto.UserRequestDTO;
 import com.danish.taskmanager.dto.UserResponseDTO;
+import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -15,9 +16,11 @@ import java.util.List;
 public class UserController {
 
     UserService userService;
+    UserRepository userRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     /* When a client requests to get all users, a request is sent to the controller endpoint. The controller handles this
@@ -63,6 +66,11 @@ public class UserController {
         // Spring automatically creates a UserRequestDTO object and fills it field by field:
         //@ModelAttribute = binding + validation + model (FULL integration)
 
+
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            result.rejectValue("email", "error.email", "Email already exists");
+        }
+
         if (result.hasErrors()) {
             return "user-form"; // Stay on the same page
         }
@@ -83,7 +91,6 @@ public class UserController {
 
     @PutMapping("/users/update/{userID}")
     public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {
-
         return userService.updateUser(userID, dto);
     }
 
