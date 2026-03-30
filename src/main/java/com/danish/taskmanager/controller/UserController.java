@@ -2,6 +2,7 @@ package com.danish.taskmanager.controller;
 
 import com.danish.taskmanager.dto.UserRequestDTO;
 import com.danish.taskmanager.dto.UserResponseDTO;
+import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.UserService;
 import jakarta.validation.Valid;
@@ -62,18 +63,30 @@ public class UserController {
 
 
     @PostMapping("/users")
-    public String addUser(@Valid @ModelAttribute("adduser") UserRequestDTO dto, BindingResult result) {
-        // Spring automatically creates a UserRequestDTO object and fills it field by field:
-        //@ModelAttribute = binding + validation + model (FULL integration)
+    public String addUser(@Valid @ModelAttribute("adduser") UserRequestDTO dto,
+                          BindingResult result) {
+        // @Valid automatically bind validation result to result
 
+        // Check validation first
+        if (dto.getId() == null) {
+            if (userRepository.existsByEmail(dto.getEmail())) {
+                result.rejectValue("email", "error.email", "Email already exists");
+            }
+        } else {
+            User existingUser = userRepository.findById(dto.getId()).orElseThrow();
 
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            result.rejectValue("email", "error.email", "Email already exists");
+            // only check if email changed
+            if (!existingUser.getEmail().equals(dto.getEmail()) &&
+                    userRepository.existsByEmail(dto.getEmail())) {
+                result.rejectValue("email", "error.email", "Email already exists");
+            }
         }
 
+        // Operations
         if (result.hasErrors()) {
-            return "user-form"; // Stay on the same page
+            return "user-form";
         }
+        // Operation after all validation
         if (dto.getId() == null) {
             userService.addUser(dto);
         } else {
