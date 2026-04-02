@@ -4,6 +4,7 @@ import com.danish.taskmanager.dto.UserRequestDTO;
 import com.danish.taskmanager.dto.UserResponseDTO;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.exception.AppException;
+import com.danish.taskmanager.mapper.UserMapper;
 import com.danish.taskmanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +14,18 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static com.danish.taskmanager.mapper.UserMapper.toDTO;
-import static com.danish.taskmanager.mapper.UserMapper.toEntity;
+
 
 @Service
 public class UserService {
 
 
     UserRepository userRepository;
+    UserMapper userMapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper=userMapper;
     }
 
     public List<UserResponseDTO> findAll() {
@@ -56,7 +59,7 @@ public class UserService {
     public UserResponseDTO addUser(UserRequestDTO dto) {
 
 
-        User saveUser = userRepository.save(toEntity(dto));
+        User saveUser = userRepository.save(userMapper.toEntity(dto));
 
         return toDTO(saveUser);
 
@@ -91,7 +94,7 @@ public class UserService {
     public UserResponseDTO registerUser(UserRequestDTO dto) {
 
 
-        User saveUser = userRepository.save(toEntity(dto));
+        User saveUser = userRepository.save(userMapper.toEntity(dto));
 
         return toDTO(saveUser);
 

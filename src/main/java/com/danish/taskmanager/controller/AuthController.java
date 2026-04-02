@@ -5,6 +5,7 @@ import com.danish.taskmanager.dto.LoginDTO;
 import com.danish.taskmanager.dto.UserRequestDTO;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
+import com.danish.taskmanager.service.AuthService;
 import com.danish.taskmanager.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +21,12 @@ public class AuthController {
 
     UserRepository userRepository;
     UserService userService;
+    AuthService authService;
 
-    public AuthController(UserService userService, UserRepository userRepository) {
-        this.userService = userService;
+    public AuthController(UserRepository userRepository, UserService userService, AuthService authService) {
         this.userRepository = userRepository;
+        this.userService = userService;
+        this.authService = authService;
     }
 
     @GetMapping("/loginForm")
@@ -48,7 +51,7 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login(LoginDTO dto) {
-        User byEmail = userRepository.findByEmail(dto.getEmail()); // call service layer here
+        User byEmail = authService.findByEmail(dto); // call service layer here
         if (Objects.equals(byEmail.getPassword(), dto.getPassword())) {
             return "redirect:/users";// later → JWT token
         } else {
