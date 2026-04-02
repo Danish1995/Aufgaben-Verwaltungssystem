@@ -23,8 +23,19 @@ public class User {
 
     private String name;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(nullable = false, unique = true)
     private String email;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

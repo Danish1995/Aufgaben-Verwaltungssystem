@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/registerUserForm")
-    public String addEmployees(Model model) {
+    public String addUser(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("adduser", newUser);
         return "user-form";
@@ -73,6 +73,7 @@ public class UserController {
                 result.rejectValue("email", "error.email", "Email already exists");
             }
         } else {
+            System.out.println("else--");
             User existingUser = userRepository.findById(dto.getId()).orElseThrow();
 
             // only check if email changed
@@ -84,6 +85,7 @@ public class UserController {
 
         // Operations
         if (result.hasErrors()) {
+            System.out.println("i am in if");
             return "user-form";
         }
         // Operation after all validation

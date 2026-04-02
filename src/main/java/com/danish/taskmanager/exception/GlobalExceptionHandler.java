@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "success", false,
                         "message", "Internal Server Error"
+
                 ));
     }
 }

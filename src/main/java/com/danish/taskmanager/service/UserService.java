@@ -43,6 +43,7 @@ public class UserService {
         if (userByID.isPresent()) {
             return toDTO(userByID.get());
         } else {
+            // spring will find @ExceptionHandler annotation and will call @ExceptionHandler(AppException.class)
             throw new AppException(
                     "User Not Found",
                     "No Registered User With this Email",
@@ -83,6 +84,16 @@ public class UserService {
 
         return toDTO(userByID);
 
+
+    }
+
+
+    public UserResponseDTO registerUser(UserRequestDTO dto) {
+
+
+        User saveUser = userRepository.save(toEntity(dto));
+
+        return toDTO(saveUser);
 
     }
 }
