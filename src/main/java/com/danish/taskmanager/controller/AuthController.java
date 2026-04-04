@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
@@ -49,14 +50,15 @@ public class AuthController {
         return "register-user";
     }
 
-    @GetMapping("/login")
-    public String login(LoginDTO dto) {
-        User byEmail = authService.findByEmail(dto); // call service layer here
-        if (Objects.equals(byEmail.getPassword(), dto.getPassword())) {
-            return "redirect:/users";// later → JWT token
-        } else {
-            throw new RuntimeException("Invalid password");
-        }
-    }
+//    @GetMapping("/login")
+//    public String login(LoginDTO dto) {
+//        Optional<User> byEmail = authService.findByEmail(dto); // call service layer here
+//        System.out.println(byEmail);
+//        if (Objects.equals(byEmail.get().getPassword(), dto.getPassword())) {
+//            return "redirect:/users";// later → JWT token
+//        } else {
+//            throw new RuntimeException("Invalid password");
+//        }
+//    }
 
 }
