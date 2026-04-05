@@ -99,4 +99,10 @@ public class UserService {
         return toDTO(saveUser);
 
     }
+
+    public  UserResponseDTO findBYEmail(String email){
+        User byEmail = userRepository.findByEmail(email).get();
+        return toDTO(byEmail);
+    }
+
 }

@@ -6,6 +6,8 @@ import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -91,6 +93,7 @@ public class UserController {
         // Operation after all validation
         if (dto.getId() == null) {
             userService.addUser(dto);
+
         } else {
             userService.updateUser(dto.getId(), dto);
         }
@@ -107,6 +110,19 @@ public class UserController {
     @PutMapping("/users/update/{userID}")
     public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {
         return userService.updateUser(userID, dto);
+    }
+
+    /* User profile controller*/
+
+    @GetMapping("/userProfile")
+    public String userProfile(Model model) {
+        // Fetch username from Spring Security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserResponseDTO byEmail = userService.findBYEmail(authentication.getName());
+        model.addAttribute("user", byEmail);
+
+        return "user-profile";
     }
 
 }
