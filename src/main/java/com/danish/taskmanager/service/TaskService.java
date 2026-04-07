@@ -32,4 +32,7 @@ public class TaskService {
 
         return listAllTask;
     }
+    public void deleteTask(int taskID){
+        taskRepository.deleteById(taskID);
+    }
 }
