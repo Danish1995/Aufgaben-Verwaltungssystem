@@ -46,21 +46,21 @@ public class UserController {
     public String getAllUsers(Model model) {
         List<UserResponseDTO> allUsers = userService.findAll();
         model.addAttribute("users", allUsers);
-        return "list-users";
+        return "/user/list-users";
     }
 
     @GetMapping("/registerUserForm")
     public String addUser(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("adduser", newUser);
-        return "user-form";
+        return "/user/user-form";
     }
 
     @GetMapping("/users/{userID}")
     public String getSingleUser(@PathVariable int userID, Model model) {
         UserResponseDTO userResponseDTO = userService.findUser(userID);
         model.addAttribute("adduser", userResponseDTO);
-        return "user-form";
+        return "/user/user-form";
     }
 
 
@@ -75,7 +75,6 @@ public class UserController {
                 result.rejectValue("email", "error.email", "Email already exists");
             }
         } else {
-            System.out.println("else--");
             User existingUser = userRepository.findById(dto.getId()).orElseThrow();
 
             // only check if email changed
@@ -87,8 +86,7 @@ public class UserController {
 
         // Operations
         if (result.hasErrors()) {
-            System.out.println("i am in if");
-            return "user-form";
+            return "/user/user-form";
         }
         // Operation after all validation
         if (dto.getId() == null) {
@@ -122,7 +120,7 @@ public class UserController {
         UserResponseDTO byEmail = userService.findBYEmail(authentication.getName());
         model.addAttribute("user", byEmail);
 
-        return "user-profile";
+        return "/user/user-profile";
     }
 
 }

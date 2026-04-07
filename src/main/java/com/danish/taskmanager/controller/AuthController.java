@@ -29,7 +29,7 @@ public class AuthController {
     public String addUser(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("loginUser", newUser);
-        return "login-user";
+        return "/user/login-user";
     }
 
     @PostMapping("/register")
@@ -42,7 +42,7 @@ public class AuthController {
     public String registerNewUserForm(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("registerUser", newUser);
-        return "register-user";
+        return "/user/register-user";
     }
 
 
