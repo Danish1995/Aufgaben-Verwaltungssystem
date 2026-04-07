@@ -1,5 +1,6 @@
 package com.danish.taskmanager.dto;
 
+import com.danish.taskmanager.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,7 +52,18 @@ public class TaskResponseDTO {
     private String description;
     private String status;
     private String priority;
+
+    public User getAssignendUser() {
+        return assignedUser;
+    }
+
     private LocalDateTime dueDate;
+    private User assignedUser;
+
+    public void setAssignedUser(User assignendUser) {
+        this.assignedUser = assignendUser;
+    }
+
     private Long assignedUserId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

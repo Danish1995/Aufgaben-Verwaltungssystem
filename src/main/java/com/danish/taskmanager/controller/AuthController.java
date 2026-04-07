@@ -1,9 +1,7 @@
 package com.danish.taskmanager.controller;
 
 
-import com.danish.taskmanager.dto.LoginDTO;
 import com.danish.taskmanager.dto.UserRequestDTO;
-import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.AuthService;
 import com.danish.taskmanager.service.UserService;
@@ -12,8 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/auth")
@@ -33,7 +29,7 @@ public class AuthController {
     public String addUser(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("loginUser", newUser);
-        return "login-user";
+        return "/user/login-user";
     }
 
     @PostMapping("/register")
@@ -46,17 +42,8 @@ public class AuthController {
     public String registerNewUserForm(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("registerUser", newUser);
-        return "register-user";
+        return "/user/register-user";
     }
 
-    @GetMapping("/login")
-    public String login(LoginDTO dto) {
-        User byEmail = authService.findByEmail(dto); // call service layer here
-        if (Objects.equals(byEmail.getPassword(), dto.getPassword())) {
-            return "redirect:/users";// later → JWT token
-        } else {
-            throw new RuntimeException("Invalid password");
-        }
-    }
 
 }

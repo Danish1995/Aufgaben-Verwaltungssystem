@@ -6,6 +6,8 @@ import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,21 +46,21 @@ public class UserController {
     public String getAllUsers(Model model) {
         List<UserResponseDTO> allUsers = userService.findAll();
         model.addAttribute("users", allUsers);
-        return "list-users";
+        return "/user/list-users";
     }
 
     @GetMapping("/registerUserForm")
     public String addUser(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("adduser", newUser);
-        return "user-form";
+        return "/user/user-form";
     }
 
     @GetMapping("/users/{userID}")
     public String getSingleUser(@PathVariable int userID, Model model) {
         UserResponseDTO userResponseDTO = userService.findUser(userID);
         model.addAttribute("adduser", userResponseDTO);
-        return "user-form";
+        return "/user/user-form";
     }
 
 
@@ -73,7 +75,6 @@ public class UserController {
                 result.rejectValue("email", "error.email", "Email already exists");
             }
         } else {
-            System.out.println("else--");
             User existingUser = userRepository.findById(dto.getId()).orElseThrow();
 
             // only check if email changed
@@ -85,12 +86,12 @@ public class UserController {
 
         // Operations
         if (result.hasErrors()) {
-            System.out.println("i am in if");
-            return "user-form";
+            return "/user/user-form";
         }
         // Operation after all validation
         if (dto.getId() == null) {
             userService.addUser(dto);
+
         } else {
             userService.updateUser(dto.getId(), dto);
         }
@@ -107,6 +108,19 @@ public class UserController {
     @PutMapping("/users/update/{userID}")
     public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {
         return userService.updateUser(userID, dto);
+    }
+
+    /* User profile controller*/
+
+    @GetMapping("/userProfile")
+    public String userProfile(Model model) {
+        // Fetch username from Spring Security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        UserResponseDTO byEmail = userService.findBYEmail(authentication.getName());
+        model.addAttribute("user", byEmail);
+
+        return "/user/user-profile";
     }
 
 }
