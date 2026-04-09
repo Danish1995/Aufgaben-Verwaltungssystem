@@ -1,5 +1,6 @@
 package com.danish.taskmanager.service;
 
+import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
 import com.danish.taskmanager.entity.Task;
 import com.danish.taskmanager.mapper.TaskMapper;
@@ -27,12 +28,18 @@ public class TaskService {
         List<TaskResponseDTO> listAllTask= new ArrayList<>();
         for(Task task : all)
         {
-           listAllTask.add(taskMapper.toEntity(task));
+           listAllTask.add(taskMapper.toDTO(task));
         }
 
         return listAllTask;
     }
     public void deleteTask(int taskID){
         taskRepository.deleteById(taskID);
+    }
+
+    public Task save(TaskRequestDTO dto){
+        Task entity = taskMapper.toEntity(dto);
+        return taskRepository.save(entity);
+
     }
 }

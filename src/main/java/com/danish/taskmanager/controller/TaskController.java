@@ -1,18 +1,17 @@
 package com.danish.taskmanager.controller;
 
+import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
 import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.service.TaskService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/tasks")
 public class TaskController {
 
     TaskRepository taskRepository;
@@ -23,23 +22,30 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping("/tasks")
+    @GetMapping("/all-tasks")
     public String tasks(Model model) {
         List<TaskResponseDTO> allTask = taskService.getAllTask();
         model.addAttribute("tasks", allTask);
         return "task/list-tasks";
     }
 
-    @GetMapping("/tasks/add")
+    @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("task", new TaskResponseDTO());
         return "task/task-form";
     }
 
-    @DeleteMapping("/tasks/delete/{id}")
-    public String deletetask(@PathVariable int id) {
+    @DeleteMapping("/delete/{id}")
+    public String deleteTask(@PathVariable int id) {
         taskService.deleteTask(id);
 
-        return "redirect:/tasks";
+        return "redirect:/tasks/all-tasks";
+    }
+
+    @PostMapping("/save")
+    public String saveTask(TaskRequestDTO dto) {
+        taskService.save(dto);
+
+        return "redirect:/tasks/all-tasks";
     }
 }
