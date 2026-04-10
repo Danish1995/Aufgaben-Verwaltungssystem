@@ -54,4 +54,19 @@ public class TaskMapper {
 
         return task;
     }
+
+    public TaskRequestDTO toRequestDTO(Task task) {
+
+        TaskRequestDTO dto = new TaskRequestDTO();
+        dto.setId(task.getId());
+        dto.setTitle(task.getTitle());
+        dto.setDescription(task.getDescription());
+        dto.setStatus(task.getStatus().name());
+        dto.setPriority(task.getPriority().name());
+        dto.setDueDate(task.getDueDate());
+
+
+        return dto;
+
+    }
 }

@@ -1,6 +1,7 @@
 package com.danish.taskmanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private String title;
@@ -34,7 +35,7 @@ public class Task {
 
     private LocalDateTime createdAt;
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -104,7 +105,7 @@ public class Task {
         return title;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

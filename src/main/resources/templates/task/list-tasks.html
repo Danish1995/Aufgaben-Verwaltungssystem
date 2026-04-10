@@ -114,7 +114,7 @@
                 <!-- Actions -->
                 <td sec:authorize="hasRole('ADMIN')">
 
-                    <a th:href="@{/tasks/edit/{id}(id=${task.id})}"
+                    <a th:href="@{/tasks/edit/{taskID}(taskID=${task.id})}"
                        class="btn btn-sm btn-primary me-1">
                         Edit
                     </a>

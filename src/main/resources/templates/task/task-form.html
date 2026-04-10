@@ -44,6 +44,8 @@
 
     <form th:action="@{/tasks/save}" th:object="${task}" method="post">
 
+        <!-- ID (hidden) -->
+        <input type="hidden" th:field="*{id}">
         <!-- TITLE -->
         <div class="mb-3">
             <input type="text" th:field="*{title}" class="form-control"
@@ -83,9 +85,9 @@
             <select th:field="*{status}" class="form-select"
                     th:classappend="${#fields.hasErrors('status')}? 'is-invalid'">
                 <option value="">Select Status</option>
-                <option value="PENDING">PENDING</option>
+                <option value="TODO">TODO</option>
                 <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="COMPLETED">COMPLETED</option>
+                <option value="DONE">DONE</option>
             </select>
             <div class="invalid-feedback"
                  th:if="${#fields.hasErrors('status')}"
@@ -108,7 +110,7 @@
 
     </form>
 
-    <a th:href="@{/tasks}" class="back-link">Back to Task List</a>
+    <a th:href="@{/tasks/all-tasks}" class="btn btn-primary">Back to Task List</a>
 
 </div>
 

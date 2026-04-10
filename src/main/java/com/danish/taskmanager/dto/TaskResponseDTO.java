@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Setter
 public class TaskResponseDTO {
 
-    private Long id;
+    private Integer id;
     private String title;
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -68,7 +68,7 @@ public class TaskResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
