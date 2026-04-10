@@ -45,6 +45,7 @@
     <form th:action="@{/tasks/save}" th:object="${task}" method="post">
 
         <!-- ID (hidden) -->
+        <!-- This sends the ID back so backend knows what to update -->
         <input type="hidden" th:field="*{id}">
         <!-- TITLE -->
         <div class="mb-3">
@@ -104,13 +105,19 @@
         </div>
 
         <!-- SUBMIT BUTTON -->
-        <button type="submit" class="btn btn-primary btn-submit">
-            Save Task
-        </button>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+                Save Task
+            </button>
+
+            <a th:href="@{/tasks/all-tasks}" class="btn btn-secondary">
+                Back to Task List
+            </a>
+        </div>
 
     </form>
 
-    <a th:href="@{/tasks/all-tasks}" class="btn btn-primary">Back to Task List</a>
+
 
 </div>
 
