@@ -3,8 +3,10 @@ package com.danish.taskmanager.service;
 import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
 import com.danish.taskmanager.entity.Task;
+import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.mapper.TaskMapper;
 import com.danish.taskmanager.repository.TaskRepository;
+import com.danish.taskmanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,12 +20,14 @@ public class TaskService {
 
     TaskRepository taskRepository;
     TaskMapper taskMapper;
+    UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper){
-        this.taskRepository=taskRepository;
-        this.taskMapper= taskMapper;
-
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper, UserRepository userRepository) {
+        this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
+        this.userRepository = userRepository;
     }
+
     public List<TaskResponseDTO> getAllTask(){
 
         List<Task> all = taskRepository.findAll();
@@ -41,10 +45,12 @@ public class TaskService {
 
     public Task save(TaskRequestDTO dto) {
 
-
+        User byId = userRepository.findById(dto.getAssignedUserId());
         if (dto.getId() != null) {
+            // Update task conditions
 
             Task task = taskRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Task not found"));
+
 
             task.setId(dto.getId());
             task.setTitle(dto.getTitle());
@@ -53,12 +59,14 @@ public class TaskService {
             task.setPriority(Task.Priority.valueOf(dto.getPriority()));
             task.setDueDate(dto.getDueDate());
             task.setCreatedAt(LocalDateTime.now());
+            task.setAssignedUser(byId);
 
             return   taskRepository.save(task);
 
         } else {
 
             Task entity = taskMapper.toEntity(dto);
+            entity.setAssignedUser(byId);
             return taskRepository.save(entity);
         }
 

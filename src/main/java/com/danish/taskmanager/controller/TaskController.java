@@ -5,6 +5,7 @@ import com.danish.taskmanager.dto.TaskResponseDTO;
 import com.danish.taskmanager.mapper.TaskMapper;
 import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.service.TaskService;
+import com.danish.taskmanager.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +21,14 @@ public class TaskController {
     TaskRepository taskRepository;
     TaskService taskService;
     TaskMapper taskMapper;
+    UserService userService;
 
 
-    public TaskController(TaskRepository taskRepository, TaskService taskService, TaskMapper taskMapper) {
+    public TaskController(TaskRepository taskRepository, TaskService taskService, TaskMapper taskMapper, UserService userService) {
         this.taskRepository = taskRepository;
         this.taskService = taskService;
         this.taskMapper = taskMapper;
+        this.userService= userService;
     }
 
     @GetMapping("/all-tasks")
@@ -70,6 +73,7 @@ public class TaskController {
 
         TaskRequestDTO requestDTO = taskService.taskUpdateValue(taskID);
         model.addAttribute("task", requestDTO);
+        model.addAttribute("users", userService.findAll());
 
 
         return "task/task-form";

@@ -31,6 +31,7 @@ public class TaskMapper {
 
         dto.setDueDate(task.getDueDate());
         dto.setUpdatedAt(task.getUpdatedAt());
+        dto.setAssignedUser(task.getAssignedUser());
 
 
         return dto;
@@ -48,6 +49,7 @@ public class TaskMapper {
         task.setPriority(Task.Priority.valueOf(dto.getPriority()));
         task.setDueDate(dto.getDueDate());
         task.setCreatedAt(LocalDateTime.now());
+
 
         // assigned user to be mapped
 
