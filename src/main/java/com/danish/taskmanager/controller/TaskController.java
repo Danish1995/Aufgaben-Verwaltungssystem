@@ -2,8 +2,6 @@ package com.danish.taskmanager.controller;
 
 import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
-import com.danish.taskmanager.mapper.TaskMapper;
-import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.service.TaskService;
 import com.danish.taskmanager.service.UserService;
 import jakarta.validation.Valid;
@@ -18,17 +16,17 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    TaskRepository taskRepository;
+
     TaskService taskService;
-    TaskMapper taskMapper;
+
     UserService userService;
 
 
-    public TaskController(TaskRepository taskRepository, TaskService taskService, TaskMapper taskMapper, UserService userService) {
-        this.taskRepository = taskRepository;
+    public TaskController(TaskService taskService, UserService userService) {
+
         this.taskService = taskService;
-        this.taskMapper = taskMapper;
-        this.userService= userService;
+
+        this.userService = userService;
     }
 
     @GetMapping("/all-tasks")
