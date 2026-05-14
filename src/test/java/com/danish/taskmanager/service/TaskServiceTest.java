@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -94,5 +95,32 @@ class TaskServiceTest {
         verify(taskRepository, times(1)).save(entity);
     }
 
+    @Test
+    void shouldUpdateTask_whenIdIsProvided() {
+
+        TaskRequestDTO dto = new TaskRequestDTO();
+        dto.setId(5);                        // NOT null = update
+        dto.setTitle("Updated Title");
+        dto.setDescription("Updated Desc");
+        dto.setStatus("IN_PROGRESS");
+        dto.setPriority("HIGH");
+        dto.setAssignedUserId(1L);
+
+        User user = new User();
+        user.setId(1L);
+
+        Task existingTask = new Task();      // task already in DB
+        existingTask.setId(5);
+        existingTask.setTitle("Old Title");
+
+        when(userRepository.findById(1L)).thenReturn(user);
+        when(taskRepository.findById(5)).thenReturn(Optional.of(existingTask));
+        when(taskRepository.save(existingTask)).thenReturn(existingTask);
+
+        Task result = taskService.save(dto);
+
+        assertEquals("Updated Title", result.getTitle());
+        verify(taskRepository, times(1)).save(existingTask);
+    }
 
 }
