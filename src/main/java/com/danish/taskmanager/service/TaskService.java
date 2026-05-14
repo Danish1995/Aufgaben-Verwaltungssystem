@@ -51,7 +51,6 @@ public class TaskService {
 
             Task task = taskRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Task not found"));
 
-
             task.setId(dto.getId());
             task.setTitle(dto.getTitle());
             task.setDescription(dto.getDescription());
