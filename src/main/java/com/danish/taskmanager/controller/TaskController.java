@@ -1,41 +1,79 @@
 package com.danish.taskmanager.controller;
 
+import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
-import com.danish.taskmanager.entity.Task;
-import com.danish.taskmanager.entity.User;
-import com.danish.taskmanager.repository.TaskRepository;
-import com.danish.taskmanager.repository.UserRepository;
-
 import com.danish.taskmanager.service.TaskService;
+import com.danish.taskmanager.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/tasks")
 public class TaskController {
 
-    TaskRepository taskRepository;
+
     TaskService taskService;
 
-    public TaskController(TaskRepository taskRepository, TaskService taskService) {
-        this.taskRepository = taskRepository;
+    UserService userService;
+
+
+    public TaskController(TaskService taskService, UserService userService) {
+
         this.taskService = taskService;
+
+        this.userService = userService;
     }
 
-    @GetMapping("/tasks")
+    @GetMapping("/all-tasks")
     public String tasks(Model model) {
         List<TaskResponseDTO> allTask = taskService.getAllTask();
-        model.addAttribute("tasks",allTask);
+        model.addAttribute("tasks", allTask);
         return "task/list-tasks";
     }
 
-    @DeleteMapping("/deletetask")
-    public String deletetask(){
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("task", new TaskRequestDTO());
+        return "task/task-form";
+    }
 
-        return "redirect/tasks";
+    @DeleteMapping("/delete/{id}")
+    public String deleteTask(@PathVariable int id) {
+        taskService.deleteTask(id);
+
+        return "redirect:/tasks/all-tasks";
+    }
+
+    @PostMapping("/save")
+    public String saveTask(@Valid @ModelAttribute("task") TaskRequestDTO dto, BindingResult result) {
+
+        System.out.println(dto.getId());
+
+
+        if (result.hasErrors()) {
+            return "task/task-form";
+        } else {
+            taskService.save(dto);
+            return "redirect:/tasks/all-tasks";
+        }
+    }
+
+    // For opening an edit form from a link, use @GetMapping.
+    @GetMapping("/edit/{taskID}")
+    public String updateTask(@PathVariable("taskID") int taskID, Model model) {
+        System.out.println("in API");
+
+
+        TaskRequestDTO requestDTO = taskService.taskUpdateValue(taskID);
+        model.addAttribute("task", requestDTO);
+        model.addAttribute("users", userService.findAll());
+
+
+        return "task/task-form";
     }
 }

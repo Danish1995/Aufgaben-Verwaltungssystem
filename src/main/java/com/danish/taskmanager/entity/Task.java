@@ -16,7 +16,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private String title;
@@ -33,84 +33,82 @@ public class Task {
     private LocalDateTime dueDate;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "assigned_user_id")
+    private User assignedUser;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
-
-    public void setDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public User getAssignedUser() {
+        return assignedUser;
     }
 
     public void setAssignedUser(User assignedUser) {
         this.assignedUser = assignedUser;
     }
 
-    private LocalDateTime updatedAt;
-
-    public User getAssignedUser() {
-        return assignedUser;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getDueDate() {
         return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
     }
 
     public Priority getPriority() {
         return priority;
     }
 
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
     public Status getStatus() {
         return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getTitle() {
         return title;
     }
 
-    public Long getId() {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "assigned_user_id")
-    private User assignedUser;
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     @PrePersist
     public void onCreate() {

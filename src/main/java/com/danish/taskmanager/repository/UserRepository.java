@@ -10,4 +10,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     //Spring Data JPA automatically creates query from method name existsByEmail → checks if email exists in DB
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
+    User findById(Long id);
 }
