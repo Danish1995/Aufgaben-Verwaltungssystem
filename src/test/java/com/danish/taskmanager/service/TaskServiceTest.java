@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class) // Tell JUnit to use Mockito
@@ -61,6 +61,43 @@ class TaskServiceTest {
         assertEquals("Fix bug", result.get(0).getTitle());
     }
 
+
+    @Test
+    void shouldUpdateTask_whenIdIsProvided() {
+
+        TaskRequestDTO dto = new TaskRequestDTO();
+        dto.setId(5L);                        // NOT null = update
+        dto.setTitle("Updated Title");
+        dto.setDescription("Updated Desc");
+        dto.setStatus("IN_PROGRESS");
+        dto.setPriority("HIGH");
+        dto.setAssignedUserId(1L);
+
+        User user = new User();
+        user.setId(1L);
+
+        Task existingTask = new Task();      // task already in DB
+        existingTask.setId(5L);
+        existingTask.setTitle("Old Title");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(taskRepository.findById(5L)).thenReturn(Optional.of(existingTask));
+        when(taskRepository.save(existingTask)).thenReturn(existingTask);
+
+        Task result = taskService.save(dto);
+
+        assertEquals("Updated Title", result.getTitle());
+        verify(taskRepository, times(1)).save(existingTask);
+    }
+
+    @Test
+    void shouldReturnEmptyList_whenNoTasksExist() {
+
+        when(taskRepository.findAll()).thenReturn(List.of()); // empty list
+        List<TaskResponseDTO> result = taskService.getAllTask();
+        assertTrue(result.isEmpty());
+    }
+
     @Test
     void shouldCreateNewTask_whenIdIsNull() {
 
@@ -95,32 +132,28 @@ class TaskServiceTest {
         verify(taskRepository, times(1)).save(entity);
     }
 
+
     @Test
-    void shouldUpdateTask_whenIdIsProvided() {
+    void shouldThrowException_whenUpdatingNonExistentTask() {
 
         TaskRequestDTO dto = new TaskRequestDTO();
-        dto.setId(5L);                        // NOT null = update
-        dto.setTitle("Updated Title");
-        dto.setDescription("Updated Desc");
-        dto.setStatus("IN_PROGRESS");
-        dto.setPriority("HIGH");
+        dto.setId(99L);               // ID that doesn't exist
         dto.setAssignedUserId(1L);
 
         User user = new User();
-        user.setId(1L);
-
-        Task existingTask = new Task();      // task already in DB
-        existingTask.setId(5L);
-        existingTask.setTitle("Old Title");
-
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(taskRepository.findById(5L)).thenReturn(Optional.of(existingTask));
-        when(taskRepository.save(existingTask)).thenReturn(existingTask);
+        when(taskRepository.findById(99L)).thenReturn(Optional.empty()); // not found!
 
-        Task result = taskService.save(dto);
-
-        assertEquals("Updated Title", result.getTitle());
-        verify(taskRepository, times(1)).save(existingTask);
+        assertThrows(RuntimeException.class, () -> taskService.save(dto));
     }
+    @Test
+    void shouldDeleteTask() {
+
+        taskService.deleteTask(1L);
+
+        // verify deleteById was called with correct ID
+        verify(taskRepository, times(1)).deleteById(1L);
+    }
+
 
 }
