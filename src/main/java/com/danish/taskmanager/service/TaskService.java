@@ -39,13 +39,13 @@ public class TaskService {
 
         return listAllTask;
     }
-    public void deleteTask(int taskID){
+    public void deleteTask(Long taskID){
         taskRepository.deleteById(taskID);
     }
 
     public Task save(TaskRequestDTO dto) {
 
-        User byId = userRepository.findById(dto.getAssignedUserId());
+        User byId = userRepository.findById(dto.getAssignedUserId()).orElseThrow(() -> new RuntimeException("User not found"));
         if (dto.getId() != null) {
             // Update task conditions
 
@@ -74,11 +74,13 @@ public class TaskService {
 
 
 
-    public TaskRequestDTO taskUpdateValue(int id){
+    public TaskRequestDTO taskUpdateValue(Long id){
 
 
         Optional<Task> byId = taskRepository.findById(id);
 
-        return taskMapper.toRequestDTO(byId.get());
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found: " + id));
+        return taskMapper.toRequestDTO(task);
     }
 }

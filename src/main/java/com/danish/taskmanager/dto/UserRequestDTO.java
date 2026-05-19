@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 public class UserRequestDTO {
 
     // to avoid null id error used wrapper class because for create it need to send null id
-    private Integer id;
+    private Long id;
 
     //Validations (DTO → define rules HTML (Thymeleaf) → bind + show errors Controller → trigger validation)
 

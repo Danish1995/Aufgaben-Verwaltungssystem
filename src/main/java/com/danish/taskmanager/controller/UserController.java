@@ -57,9 +57,8 @@ public class UserController {
     }
 
     @GetMapping("/users/{userID}")
-    public String getSingleUser(@PathVariable int userID, Model model) {
-        UserResponseDTO userResponseDTO = userService.findUser(userID);
-        model.addAttribute("adduser", userResponseDTO);
+    public String getSingleUser(@PathVariable Long userID, Model model) {
+        model.addAttribute("adduser", userService.findUserForForm(userID));
         return "/user/user-form";
     }
 
@@ -100,13 +99,13 @@ public class UserController {
     }
 
     @DeleteMapping("users/delete/{userID}")
-    public String deleteUser(@PathVariable int userID) {
+    public String deleteUser(@PathVariable Long userID) {
         userService.deleteUser(userID);
         return "redirect:/users";
     }
 
     @PutMapping("/users/update/{userID}")
-    public UserResponseDTO updateUser(@PathVariable int userID, @RequestBody UserRequestDTO dto) {
+    public UserResponseDTO updateUser(@PathVariable Long userID, @RequestBody UserRequestDTO dto) {
         return userService.updateUser(userID, dto);
     }
 
