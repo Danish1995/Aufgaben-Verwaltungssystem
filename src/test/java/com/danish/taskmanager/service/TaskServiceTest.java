@@ -76,10 +76,10 @@ class TaskServiceTest {
         entity.setTitle("New Task");
 
         Task savedTask = new Task();
-        savedTask.setId(10);          // DB assigned ID after save
+        savedTask.setId(10L);          // DB assigned ID after save
         savedTask.setTitle("New Task");
 
-        when(userRepository.findById(1L)).thenReturn(user);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(taskMapper.toEntity(dto)).thenReturn(entity);
         when(taskRepository.save(entity)).thenReturn(savedTask);
 
@@ -99,7 +99,7 @@ class TaskServiceTest {
     void shouldUpdateTask_whenIdIsProvided() {
 
         TaskRequestDTO dto = new TaskRequestDTO();
-        dto.setId(5);                        // NOT null = update
+        dto.setId(5L);                        // NOT null = update
         dto.setTitle("Updated Title");
         dto.setDescription("Updated Desc");
         dto.setStatus("IN_PROGRESS");
@@ -110,11 +110,11 @@ class TaskServiceTest {
         user.setId(1L);
 
         Task existingTask = new Task();      // task already in DB
-        existingTask.setId(5);
+        existingTask.setId(5L);
         existingTask.setTitle("Old Title");
 
-        when(userRepository.findById(1L)).thenReturn(user);
-        when(taskRepository.findById(5)).thenReturn(Optional.of(existingTask));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(taskRepository.findById(5L)).thenReturn(Optional.of(existingTask));
         when(taskRepository.save(existingTask)).thenReturn(existingTask);
 
         Task result = taskService.save(dto);

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class TaskRequestDTO {
-    private Integer id;
+    private Long id;
     @NotBlank(message = "title is required")
     private String title;
     @NotBlank(message = "description is required")

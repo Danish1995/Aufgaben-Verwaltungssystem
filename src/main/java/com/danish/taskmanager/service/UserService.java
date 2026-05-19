@@ -40,7 +40,7 @@ public class UserService {
     }
 
 
-    public UserResponseDTO findUser(int userID) {
+    public UserResponseDTO findUser(Long userID) {
         Optional<User> userByID = userRepository.findById(userID);
 
         if (userByID.isPresent()) {
@@ -55,6 +55,22 @@ public class UserService {
         }
 
     }
+    public UserRequestDTO findUserForForm(Long userID) {
+        Optional<User> userByID = userRepository.findById(userID);
+
+        if (userByID.isPresent()) {
+            User user = userByID.get();
+            UserRequestDTO dto = new UserRequestDTO();
+            dto.setId(user.getId());
+            dto.setName(user.getName());
+            dto.setEmail(user.getEmail());
+            dto.setRole(user.getRole().toString());
+            // password left blank intentionally
+            return dto;
+        } else {
+            throw new AppException("User Not Found", "No Registered User With this ID", 400);
+        }
+    }
 
     public UserResponseDTO addUser(UserRequestDTO dto) {
 
@@ -65,7 +81,7 @@ public class UserService {
 
     }
 
-    public User deleteUser(int userID) {
+    public User deleteUser(Long userID) {
         Optional<User> userByID = userRepository.findById(userID);
         if (userByID.isPresent()) {
             userRepository.delete(userByID.get());
@@ -75,7 +91,7 @@ public class UserService {
         }
     }
 
-    public UserResponseDTO updateUser(Integer userID, UserRequestDTO userRequestDTO) {
+    public UserResponseDTO updateUser(Long userID, UserRequestDTO userRequestDTO) {
 
         User userByID = userRepository.findById(userID).orElseThrow(() -> new NoSuchElementException("User with ID " + userID + " not found"));
         userByID.setName(userRequestDTO.getName());

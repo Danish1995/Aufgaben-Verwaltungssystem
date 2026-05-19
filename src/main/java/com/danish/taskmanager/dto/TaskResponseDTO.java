@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 public class TaskResponseDTO {
 
-    private Integer id;
+    private Long id;
     private String title;
     private String description;
     private String status;

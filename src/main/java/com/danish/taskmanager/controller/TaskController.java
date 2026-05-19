@@ -43,7 +43,7 @@
         }
 
         @DeleteMapping("/delete/{id}")
-        public String deleteTask(@PathVariable int id) {
+        public String deleteTask(@PathVariable Long id) {
             taskService.deleteTask(id);
 
             return "redirect:/tasks/all-tasks";
@@ -65,9 +65,7 @@
 
         // For opening an edit form from a link, use @GetMapping.
         @GetMapping("/edit/{taskID}")
-        public String updateTask(@PathVariable("taskID") int taskID, Model model) {
-            System.out.println("in API");
-
+        public String updateTask(@PathVariable("taskID") Long taskID, Model model) {
 
             TaskRequestDTO requestDTO = taskService.taskUpdateValue(taskID);
             model.addAttribute("task", requestDTO);
