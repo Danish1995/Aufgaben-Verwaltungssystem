@@ -41,7 +41,6 @@ class TaskControllerTest {
     @Test
     void shouldLoadAllTasksPage() throws Exception {
 
-        // ARRANGE — fake data service would return
         TaskResponseDTO dto = new TaskResponseDTO();
         dto.setTitle("Fix Bug");
 
@@ -55,5 +54,82 @@ class TaskControllerTest {
                 .andExpect(model().attribute("tasks", List.of(dto))); // correct data
     }
 
+    // TEST 2 — GET /tasks/add (show empty form)
+
+    @Test
+    void shouldLoadAddTaskForm() throws Exception {
+
+        mockMvc.perform(get("/tasks/add"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("task/task-form"))   // correct form view
+                .andExpect(model().attributeExists("task"));        // empty dto added to model
+    }
+
+    // TEST 3 — POST /tasks/save (valid data)
+
+    @Test
+    void shouldSaveTask_andRedirect_whenValidInput() throws Exception {
+
+        mockMvc.perform(post("/tasks/save")
+                        .param("title", "Fix Bug")         // simulates form fields
+                        .param("status", "PENDING")
+                        .param("priority", "HIGH")
+                        .param("assignedUserId", "1"))
+                .andExpect(status().is3xxRedirection())            // redirect happened
+                .andExpect(redirectedUrl("/tasks/all-tasks"));     // redirected to correct URL
+
+        verify(taskService, times(1)).save(any());             // save was called
+    }
+
+    // TEST 4 — POST /tasks/save (INVALID data → validation)
+
+    @Test
+    void shouldReturnForm_whenValidationFails() throws Exception {
+
+        mockMvc.perform(post("/tasks/save")
+                        .param("title", ""))               // blank title = validation error
+                .andExpect(status().isOk())
+                .andExpect(view().name("task/task-form")); // stays on form, no redirect
+
+        verify(taskService, never()).save(any());      // save was NEVER called
+    }
+
+    // TEST 5 — GET /tasks/edit/{id}
+
+    @Test
+    void shouldLoadEditForm_withTaskData() throws Exception {
+
+        // ARRANGE
+        TaskRequestDTO existingTask = new TaskRequestDTO();
+        existingTask.setId(1L);
+        existingTask.setTitle("Old Title");
+
+        UserResponseDTO user = new UserResponseDTO();
+
+        user.setId(1L);
+
+        when(taskService.taskUpdateValue(1L)).thenReturn(existingTask);
+        when(userService.findAll()).thenReturn(List.of(user));
+
+        // ACT + ASSERT
+        mockMvc.perform(get("/tasks/edit/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("task/task-form"))
+                .andExpect(model().attribute("task", existingTask)) // correct task loaded
+                .andExpect(model().attributeExists("users"));       // users list in model
+    }
+
+
+    // TEST 6 — DELETE /tasks/delete/{id}
+
+    @Test
+    void shouldDeleteTask_andRedirect() throws Exception {
+
+        mockMvc.perform(delete("/tasks/delete/1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/tasks/all-tasks"));
+
+        verify(taskService, times(1)).deleteTask(1L); // deleteTask called with correct ID
+    }
 
 }
