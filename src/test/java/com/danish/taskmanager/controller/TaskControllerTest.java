@@ -67,10 +67,12 @@ class TaskControllerTest {
     void shouldSaveTask_andRedirect_whenValidInput() throws Exception {
 
         mockMvc.perform(post("/tasks/save")
-                        .param("title", "Fix Bug")         // simulates form fields
+                        .param("title", "Fix Bug")
+                        .param("description", "Test Description")
                         .param("status", "PENDING")
                         .param("priority", "HIGH")
-                        .param("assignedUserId", "1"))
+                        .param("assignedUserId", "1")
+                        .param("dueDate", "2026-05-20T10:00:00"))
                 .andExpect(status().is3xxRedirection())            // redirect happened
                 .andExpect(redirectedUrl("/tasks/all-tasks"));     // redirected to correct URL
 
