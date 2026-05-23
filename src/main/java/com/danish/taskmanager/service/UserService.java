@@ -117,7 +117,7 @@ public class UserService {
     }
 
     public  UserResponseDTO findBYEmail(String email){
-        User byEmail = userRepository.findByEmail(email).get();
+        User byEmail = userRepository.findByEmail(email).orElseThrow(() -> new AppException("User not found", "USER_NOT_FOUND", 404));
         return toDTO(byEmail);
     }
 
