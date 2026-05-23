@@ -73,7 +73,7 @@ class TaskControllerTest {
                         .param("priority", "HIGH")
                         .param("assignedUserId", "1")
                         .param("dueDate", "2026-05-20T10:00:00"))
-                .andExpect(status().is3xxRedirection())            // redirect happened
+                .andExpect(status().is3xxRedirection())                         // redirect happened
                 .andExpect(redirectedUrl("/tasks/all-tasks"));     // redirected to correct URL
 
         verify(taskService, times(1)).save(any());             // save was called

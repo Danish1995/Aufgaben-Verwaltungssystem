@@ -29,14 +29,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -58,54 +50,6 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = java.time.LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 
     public enum Role {
