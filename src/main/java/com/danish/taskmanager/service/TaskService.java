@@ -57,7 +57,6 @@ public class TaskService {
             task.setStatus(Task.Status.valueOf(dto.getStatus()));
             task.setPriority(Task.Priority.valueOf(dto.getPriority()));
             task.setDueDate(dto.getDueDate());
-            task.setCreatedAt(LocalDateTime.now());
             task.setAssignedUser(byId);
 
             return   taskRepository.save(task);
@@ -72,12 +71,7 @@ public class TaskService {
     }
 
 
-
-
     public TaskRequestDTO taskUpdateValue(Long id){
-
-
-        Optional<Task> byId = taskRepository.findById(id);
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found: " + id));

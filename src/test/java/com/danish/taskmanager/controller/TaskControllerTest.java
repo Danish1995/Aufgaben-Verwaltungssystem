@@ -1,10 +1,8 @@
 package com.danish.taskmanager.controller;
 
-import com.danish.taskmanager.config.SecurityConfig;
 import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
 import com.danish.taskmanager.dto.UserResponseDTO;
-import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.service.TaskService;
 import com.danish.taskmanager.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -12,13 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,23 +31,23 @@ class TaskControllerTest {
     @MockBean
     UserService userService;   // fake UserService
 
-    // ─────────────────────────────────────────────
     // TEST 1 — GET /tasks/all-tasks
-    // ─────────────────────────────────────────────
+
     @Test
     void shouldLoadAllTasksPage() throws Exception {
+
+        // For detailed MockMvc testing notes, see docs/testing-notes.md
 
         TaskResponseDTO dto = new TaskResponseDTO();
         dto.setTitle("Fix Bug");
 
         when(taskService.getAllTask()).thenReturn(List.of(dto));
 
-        // ACT + ASSERT
         mockMvc.perform(get("/tasks/all-tasks"))
-                .andExpect(status().isOk())                        // HTTP 200
-                .andExpect(view().name("task/list-tasks"))         // correct view returned
-                .andExpect(model().attributeExists("tasks"))       // model has "tasks"
-                .andExpect(model().attribute("tasks", List.of(dto))); // correct data
+                .andExpect(status().isOk())                                         // Checks HTTP status.
+                .andExpect(view().name("task/list-tasks"))          // Checks controller returned return "task/list-tasks";
+                .andExpect(model().attributeExists("tasks"))                // Checks model contains:
+                .andExpect(model().attribute("tasks", List.of(dto)));         // Checks exact value stored in model.
     }
 
     // TEST 2 — GET /tasks/add (show empty form)
@@ -71,11 +67,13 @@ class TaskControllerTest {
     void shouldSaveTask_andRedirect_whenValidInput() throws Exception {
 
         mockMvc.perform(post("/tasks/save")
-                        .param("title", "Fix Bug")         // simulates form fields
+                        .param("title", "Fix Bug")
+                        .param("description", "Test Description")
                         .param("status", "PENDING")
                         .param("priority", "HIGH")
-                        .param("assignedUserId", "1"))
-                .andExpect(status().is3xxRedirection())            // redirect happened
+                        .param("assignedUserId", "1")
+                        .param("dueDate", "2026-05-20T10:00:00"))
+                .andExpect(status().is3xxRedirection())                         // redirect happened
                 .andExpect(redirectedUrl("/tasks/all-tasks"));     // redirected to correct URL
 
         verify(taskService, times(1)).save(any());             // save was called

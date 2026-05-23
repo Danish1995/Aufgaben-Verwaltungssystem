@@ -52,9 +52,6 @@
         @PostMapping("/save")
         public String saveTask(@Valid @ModelAttribute("task") TaskRequestDTO dto, BindingResult result) {
 
-            System.out.println(dto.getId());
-
-
             if (result.hasErrors()) {
                 return "task/task-form";
             } else {
