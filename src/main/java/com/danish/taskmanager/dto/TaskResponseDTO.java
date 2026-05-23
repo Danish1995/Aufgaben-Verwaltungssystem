@@ -16,7 +16,7 @@ public class TaskResponseDTO {
     private String status;
     private String priority;
     private LocalDateTime dueDate;
-    private User assignedUser;
+    private User assignedUser; //TODO change to user name then update html page
     private Long assignedUserId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
