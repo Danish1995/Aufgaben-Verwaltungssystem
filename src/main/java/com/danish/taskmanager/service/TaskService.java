@@ -1,5 +1,6 @@
 package com.danish.taskmanager.service;
 
+import com.danish.taskmanager.dto.TaskFilter;
 import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
 import com.danish.taskmanager.entity.Task;
@@ -7,6 +8,7 @@ import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.mapper.TaskMapper;
 import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.repository.UserRepository;
+import com.danish.taskmanager.specification.TaskSpecification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -39,6 +41,7 @@ public class TaskService {
 
         return listAllTask;
     }
+
     public void deleteTask(Long taskID){
         taskRepository.deleteById(taskID);
     }
