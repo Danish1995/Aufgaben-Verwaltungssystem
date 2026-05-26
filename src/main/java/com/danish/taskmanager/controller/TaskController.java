@@ -1,10 +1,15 @@
     package com.danish.taskmanager.controller;
 
+    import com.danish.taskmanager.dto.TaskFilter;
     import com.danish.taskmanager.dto.TaskRequestDTO;
     import com.danish.taskmanager.dto.TaskResponseDTO;
     import com.danish.taskmanager.service.TaskService;
     import com.danish.taskmanager.service.UserService;
     import jakarta.validation.Valid;
+    import org.springframework.data.domain.Page;
+    import org.springframework.data.domain.PageRequest;
+    import org.springframework.data.domain.Pageable;
+    import org.springframework.data.domain.Sort;
     import org.springframework.stereotype.Controller;
     import org.springframework.ui.Model;
     import org.springframework.validation.BindingResult;
@@ -29,10 +34,43 @@
             this.userService = userService;
         }
 
+//        @GetMapping("/all-tasks")
+//        public String tasks(Model model) {
+//            List<TaskResponseDTO> allTask = taskService.getAllTask();
+//            model.addAttribute("tasks", allTask);
+//            return "task/list-tasks";
+//        }
+
         @GetMapping("/all-tasks")
-        public String tasks(Model model) {
-            List<TaskResponseDTO> allTask = taskService.getAllTask();
-            model.addAttribute("tasks", allTask);
+        public String tasks(
+                @RequestParam(required = false) String status,
+                @RequestParam(required = false) String priority,
+                @RequestParam(required = false) Long assignedUserId,
+                @RequestParam(required = false) String keyword,
+                @RequestParam(defaultValue = "0") int page,
+                @RequestParam(defaultValue = "5") int size,
+                Model model) {
+
+            TaskFilter filter = new TaskFilter();
+            filter.setStatus(status);
+            filter.setPriority(priority);
+            filter.setAssignedUserId(assignedUserId);
+            filter.setKeyword(keyword);
+
+            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+            Page<TaskResponseDTO> taskPage = taskService.getFilteredTasks(filter, pageable);
+
+            model.addAttribute("tasks", taskPage.getContent());
+            model.addAttribute("taskPage", taskPage);
+            model.addAttribute("users", userService.findAll());
+
+            // Pass filters back so form stays filled
+            model.addAttribute("currentStatus", status);
+            model.addAttribute("currentPriority", priority);
+            model.addAttribute("currentUser", assignedUserId);
+            model.addAttribute("currentKeyword", keyword);
+            model.addAttribute("currentSize", size);
+
             return "task/list-tasks";
         }
 

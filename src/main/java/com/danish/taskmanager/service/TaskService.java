@@ -9,6 +9,9 @@ import com.danish.taskmanager.mapper.TaskMapper;
 import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.specification.TaskSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,16 +33,22 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public List<TaskResponseDTO> getAllTask(){
+//    public List<TaskResponseDTO> getAllTask(){
+//
+//        List<Task> all = taskRepository.findAll();
+//        List<TaskResponseDTO> listAllTask= new ArrayList<>();
+//        for(Task task : all)
+//        {
+//           listAllTask.add(taskMapper.toDTO(task));
+//        }
+//
+//        return listAllTask;
+//    }
 
-        List<Task> all = taskRepository.findAll();
-        List<TaskResponseDTO> listAllTask= new ArrayList<>();
-        for(Task task : all)
-        {
-           listAllTask.add(taskMapper.toDTO(task));
-        }
-
-        return listAllTask;
+    public Page<TaskResponseDTO> getFilteredTasks(TaskFilter filter, Pageable pageable) {
+        Specification<Task> spec = TaskSpecification.withFilters(filter);
+        return taskRepository.findAll(spec, pageable)
+                .map(taskMapper::toDTO);
     }
 
     public void deleteTask(Long taskID){
