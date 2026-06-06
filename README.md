@@ -1,128 +1,280 @@
-# Aufgaben-Verwaltungssystem (Task Management System)
+# Aufgaben-Verwaltungssystem — Task Management System
 
-A full-stack task management application inspired by Jira, built with Spring Boot. The system allows users to register, authenticate, manage tasks, assign work to team members, and track task progress through a secure role-based environment.
+A full-stack task management application inspired by Jira, built with Spring Boot 3 and Thymeleaf. Users can register, log in, manage tasks, assign work to team members, and track progress through a secure, role-based web interface.
+
+---
+
+## Screenshots
+
+> Add screenshots of your dashboard, task list, user management page, and Swagger UI here.
+
+---
 
 ## Features
 
 ### Authentication & Security
 
-* User registration and login
-* JWT-based authentication
-* Spring Security integration
-* Role-based authorization (Admin/Manager/User)
-* Protected API endpoints
+* Session-based authentication using Spring Security
+* Login and logout functionality
+* BCrypt password hashing
+* Role-based access control (`ADMIN`, `MANAGER`, `MEMBER`)
+* Protected routes with automatic redirection to login for unauthenticated users
 
 ### User Management
 
-* Full CRUD operations for users
-* User profile management
-* User search and filtering
-* Pagination support
+* Create, view, update, and delete users
+* User profile page for authenticated users
+* Email uniqueness validation
+* Password encoding during registration
+* Role assignment and management
 
 ### Task Management
 
-* Full CRUD operations for tasks
-* Assign tasks to users
-* Task status management
-* Priority management
-* View assigned tasks
-* Task filtering by:
-
-   * Status
-   * Priority
-   * Assigned User
-* Pagination and sorting
+* Create, view, update, and delete tasks
+* Assign tasks to team members
+* Task status tracking (`TODO`, `IN_PROGRESS`, `DONE`)
+* Priority levels (`LOW`, `MEDIUM`, `HIGH`)
+* Dynamic filtering by status, priority, assigned user, and keyword
+* Pagination and sorting support
 
 ### Validation & Error Handling
 
-* Request validation using Bean Validation
-* Global exception handling
-* Consistent API error responses
+* Jakarta Bean Validation (`@NotBlank`, `@Email`, `@NotNull`)
+* Global exception handling using `@RestControllerAdvice`
+* Inline validation messages in Thymeleaf forms
+
+### REST API & Documentation
+
+* REST API endpoints for users and tasks
+* Interactive Swagger UI documentation
+* OpenAPI 3.0 integration via SpringDoc
 
 ### Testing
 
-* Unit testing with JUnit 5
-* Mocking with Mockito
-* Controller testing with MockMvc
-* Service layer testing
+* Controller tests using MockMvc
+* Service layer unit tests with Mockito and JUnit 5
+* Isolated testing using `@MockBean`
 
-### Frontend
-
-* Thymeleaf-based user interface
-* User dashboard and profile views
+---
 
 ## Technology Stack
 
-* Java 17
-* Spring Boot
-* Spring Security (JWT)
-* Spring Data JPA
-* Hibernate
-* MySQL
-* Maven
-* Thymeleaf
-* JUnit 5
-* Mockito
-* MockMvc
+| Layer       | Technology                 |
+| ----------- | -------------------------- |
+| Language    | Java 21                    |
+| Framework   | Spring Boot 3.3.5          |
+| Security    | Spring Security            |
+| Persistence | Spring Data JPA, Hibernate |
+| Database    | MySQL 8                    |
+| Frontend    | Thymeleaf, Bootstrap 5     |
+| API Docs    | SpringDoc OpenAPI 3.0      |
+| Validation  | Jakarta Bean Validation    |
+| Testing     | JUnit 5, Mockito, MockMvc  |
+| Build Tool  | Maven                      |
+
+---
 
 ## Project Architecture
 
 The application follows a layered architecture:
 
-* Controller Layer
-* Service Layer
-* Repository Layer
-* Security Layer
-* Validation Layer
+```text
+Controller Layer   → Handles HTTP requests
+Service Layer      → Business logic
+Repository Layer   → Data access using Spring Data JPA
+DTO Layer          → Request/Response contracts
+Mapper Layer       → Entity ↔ DTO conversion
+Exception Layer    → Global exception handling
+Security Layer     → Authentication & authorization
+```
 
-## API Endpoints
+---
+
+## Web Application Endpoints (Thymeleaf)
 
 ### Authentication
 
-| Method | Endpoint           | Description                 |
-| ------ | ------------------ | --------------------------- |
-| POST   | /api/auth/register | Register a new user         |
-| POST   | /api/auth/login    | Login and receive JWT token |
+| Method | Endpoint                    | Description               |
+| ------ | --------------------------- | ------------------------- |
+| GET    | `/auth/loginForm`           | Display login page        |
+| GET    | `/auth/registerNewUserForm` | Display registration page |
+| POST   | `/auth/register`            | Register a new user       |
 
-### Tasks
+---
 
-| Method | Endpoint        | Description   |
-| ------ | --------------- | ------------- |
-| GET    | /api/tasks      | Get all tasks |
-| POST   | /api/tasks      | Create task   |
-| PUT    | /api/tasks/{id} | Update task   |
-| DELETE | /api/tasks/{id} | Delete task   |
+### User Management
 
-### Users
+| Method | Endpoint             | Description                    |
+| ------ | -------------------- | ------------------------------ |
+| GET    | `/users`             | Display all users              |
+| GET    | `/registerUserForm`  | Display create-user form       |
+| GET    | `/users/{id}`        | Display edit-user form         |
+| POST   | `/users`             | Create or update a user        |
+| DELETE | `/users/delete/{id}` | Delete a user                  |
+| GET    | `/userProfile`       | Display logged-in user profile |
 
-| Method | Endpoint        | Description |
-| ------ | --------------- | ----------- |
-| GET    | /api/users      | Get users   |
-| POST   | /api/users      | Create user |
-| PUT    | /api/users/{id} | Update user |
-| DELETE | /api/users/{id} | Delete user |
+---
+
+### Task Management
+
+| Method | Endpoint          | Description                                     |
+| ------ | ----------------- | ----------------------------------------------- |
+| GET    | `/api/tasks`      | Display all tasks with filtering and pagination |
+| GET    | `/api/add`        | Display create-task form                        |
+| GET    | `/api/tasks/{id}` | Display edit-task form                          |
+| POST   | `/api/tasks`      | Create or update a task                         |
+| DELETE | `/api/tasks/{id}` | Delete a task                                   |
+
+#### Task Filter Parameters
+
+| Parameter        | Type    | Description                    |
+| ---------------- | ------- | ------------------------------ |
+| `status`         | String  | Filter by task status          |
+| `priority`       | String  | Filter by task priority        |
+| `assignedUserId` | Long    | Filter by assigned user        |
+| `keyword`        | String  | Search by title or description |
+| `page`           | Integer | Page number (default: 0)       |
+| `size`           | Integer | Page size (default: 5)         |
+
+---
+
+## REST API Endpoints
+
+### Task APIs
+
+| Method | Endpoint             | Description    |
+| ------ | -------------------- | -------------- |
+| GET    | `/api/v1/tasks`      | Get all tasks  |
+| GET    | `/api/v1/tasks/{id}` | Get task by ID |
+| POST   | `/api/v1/tasks`      | Create a task  |
+| PUT    | `/api/v1/tasks/{id}` | Update a task  |
+| DELETE | `/api/v1/tasks/{id}` | Delete a task  |
+
+### User APIs
+
+| Method | Endpoint             | Description    |
+| ------ | -------------------- | -------------- |
+| GET    | `/api/v1/users`      | Get all users  |
+| GET    | `/api/v1/users/{id}` | Get user by ID |
+| POST   | `/api/v1/users`      | Create a user  |
+| PUT    | `/api/v1/users/{id}` | Update a user  |
+| DELETE | `/api/v1/users/{id}` | Delete a user  |
+
+---
+
+## API Documentation
+
+Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+OpenAPI JSON:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+---
 
 ## Running Locally
 
-1. Clone the repository
+### Prerequisites
 
-   git clone https://github.com/Danish1995/Aufgaben-Verwaltungssystem.git
+* Java 21
+* Maven
+* MySQL 8
 
-2. Configure database credentials in:
+### Clone the Repository
 
-   src/main/resources/application.properties
+```bash
+git clone https://github.com/Danish1995/Aufgaben-Verwaltungssystem.git
+cd Aufgaben-Verwaltungssystem
+```
 
-3. Run the application
+### Create Database
 
-   ./mvnw spring-boot:run
+```sql
+CREATE DATABASE taskmanager_db;
+```
 
-4. Access the application through your browser or API client.
+### Configure Application Properties
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/taskmanager_db
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+```
+
+### Run the Application
+
+```bash
+./mvnw spring-boot:run
+```
+
+### Open in Browser
+
+```text
+http://localhost:8080/auth/loginForm
+```
+
+---
+
+## Running Tests
+
+```bash
+./mvnw test
+```
+
+---
+
+## Project Structure
+
+```text
+src/main/java/com/danish/taskmanager/
+├── config/
+├── controller/
+├── dto/
+├── entity/
+├── exception/
+├── mapper/
+├── repository/
+├── service/
+└── specification/
+```
+
+### Package Overview
+
+| Package       | Description                        |
+| ------------- | ---------------------------------- |
+| config        | Security and OpenAPI configuration |
+| controller    | MVC and REST controllers           |
+| dto           | Request and response DTOs          |
+| entity        | JPA entities                       |
+| exception     | Global exception handling          |
+| mapper        | DTO mapping logic                  |
+| repository    | Spring Data JPA repositories       |
+| service       | Business logic layer               |
+| specification | Dynamic filtering specifications   |
+
+---
 
 ## Future Improvements
 
-* Docker support
-* CI/CD pipeline with GitHub Actions
-* Swagger/OpenAPI documentation
-* Email notifications
-* Audit logging
-* Deployment to AWS
+* Docker and Docker Compose support
+* GitHub Actions CI/CD pipeline
+* Task analytics dashboard
+* Project management module
+* Email notifications using Spring Mail
+* Event-driven notifications with Kafka
+* Microservices architecture
+* Kubernetes deployment
+
+---
+
+## Author
+
+**Danish**
+
+GitHub: https://github.com/Danish1995
