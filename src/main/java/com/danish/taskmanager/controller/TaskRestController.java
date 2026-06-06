@@ -24,9 +24,11 @@ import org.springframework.web.bind.annotation.*;
 public class TaskRestController {
 
     private final TaskService taskService;
+    private final UserService userService;
 
-    public TaskRestController(TaskService taskService) {
+    public TaskRestController(TaskService taskService, UserService userService) {
         this.taskService = taskService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -58,4 +60,13 @@ public class TaskRestController {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a task")
+    public ResponseEntity<Void> updateTask(@PathVariable Long id,
+                                           @Valid @RequestBody TaskRequestDTO dto) {
+        dto.setId(id);
+        taskService.save(dto);
+        return ResponseEntity.ok().build();
+    }
+
 }
