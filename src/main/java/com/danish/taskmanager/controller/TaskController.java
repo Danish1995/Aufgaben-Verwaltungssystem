@@ -5,6 +5,7 @@
     import com.danish.taskmanager.dto.TaskResponseDTO;
     import com.danish.taskmanager.service.TaskService;
     import com.danish.taskmanager.service.UserService;
+    import io.swagger.v3.oas.annotations.tags.Tag;
     import jakarta.validation.Valid;
     import org.springframework.data.domain.Page;
     import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@
 
     @Controller
     @RequestMapping("/api")
+    @Tag(name = "Task Management", description = "CRUD operations for tasks")
     public class TaskController {
 
 
