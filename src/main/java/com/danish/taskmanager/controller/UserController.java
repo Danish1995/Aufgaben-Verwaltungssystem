@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@Tag(name = "User Management", description = "CRUD operations for users")
 public class UserController {
 
     UserService userService;
