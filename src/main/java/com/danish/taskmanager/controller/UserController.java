@@ -5,6 +5,7 @@ import com.danish.taskmanager.dto.UserResponseDTO;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

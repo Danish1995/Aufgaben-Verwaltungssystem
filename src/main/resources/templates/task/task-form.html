@@ -42,7 +42,7 @@
 
     <h3>Add New Task</h3>
 
-    <form th:action="@{/tasks/save}" th:object="${task}" method="post">
+    <form th:action="@{/api/tasks}" th:object="${task}" method="post">
 
         <!-- ID (hidden) -->
         <!-- This sends the ID back so backend knows what to update -->
