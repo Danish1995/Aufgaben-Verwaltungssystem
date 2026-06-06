@@ -18,7 +18,7 @@
     import java.util.List;
 
     @Controller
-    @RequestMapping("/tasks")
+    @RequestMapping("/api")
     public class TaskController {
 
 
@@ -41,7 +41,7 @@
 //            return "task/list-tasks";
 //        }
 
-        @GetMapping("/all-tasks")
+        @GetMapping("/tasks")
         public String tasks(
                 @RequestParam(required = false) String status,
                 @RequestParam(required = false) String priority,
@@ -80,27 +80,27 @@
             return "task/task-form";
         }
 
-        @DeleteMapping("/delete/{id}")
+        @DeleteMapping("/tasks/{id}")
         public String deleteTask(@PathVariable Long id) {
             taskService.deleteTask(id);
 
-            return "redirect:/tasks/all-tasks";
+            return "redirect:/api/tasks";
         }
 
-        @PostMapping("/save")
+        @PostMapping("/tasks")
         public String saveTask(@Valid @ModelAttribute("task") TaskRequestDTO dto, BindingResult result) {
 
             if (result.hasErrors()) {
                 return "task/task-form";
             } else {
                 taskService.save(dto);
-                return "redirect:/tasks/all-tasks";
+                return "redirect:/api/tasks";
             }
         }
 
         // For opening an edit form from a link, use @GetMapping.
-        @GetMapping("/edit/{taskID}")
-        public String updateTask(@PathVariable("taskID") Long taskID, Model model) {
+        @GetMapping("/tasks/{id}")
+        public String updateTask(@PathVariable("id") Long taskID, Model model) {
 
             TaskRequestDTO requestDTO = taskService.taskUpdateValue(taskID);
             model.addAttribute("task", requestDTO);

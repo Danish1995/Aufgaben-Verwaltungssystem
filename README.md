@@ -106,15 +106,15 @@ The application follows a layered architecture:
 
 1. Clone the repository
 
-git clone https://github.com/Danish1995/Aufgaben-Verwaltungssystem.git
+   git clone https://github.com/Danish1995/Aufgaben-Verwaltungssystem.git
 
 2. Configure database credentials in:
 
-src/main/resources/application.properties
+   src/main/resources/application.properties
 
 3. Run the application
 
-./mvnw spring-boot:run
+   ./mvnw spring-boot:run
 
 4. Access the application through your browser or API client.
 
