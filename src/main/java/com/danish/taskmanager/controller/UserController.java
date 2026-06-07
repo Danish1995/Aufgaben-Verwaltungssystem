@@ -1,12 +1,15 @@
 package com.danish.taskmanager.controller;
 
-import com.danish.taskmanager.dto.UserRequestDTO;
-import com.danish.taskmanager.dto.UserResponseDTO;
+import com.danish.taskmanager.dto.*;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -42,13 +45,46 @@ public class UserController {
     Finally, in the Thymeleaf view, the list of DTOs is accessed using the model attribute. The template iterates over
         this list and displays the required fields using DTO properties, rendering the data to the client in a
     structured HTML format.*/
-
+//
+//    @GetMapping("/users")
+//    public String getAllUsers(Model model) {
+//        List<UserResponseDTO> allUsers = userService.findAll();
+//        model.addAttribute("users", allUsers);
+//        return "/user/list-users";
+//    }
     @GetMapping("/users")
-    public String getAllUsers(Model model) {
-        List<UserResponseDTO> allUsers = userService.findAll();
-        model.addAttribute("users", allUsers);
+    public String getAllUsers( @RequestParam(required = false) String name,
+                               @RequestParam(required = false) String email,
+                               @RequestParam(required = false) String role,
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "5") int size,
+                               Model model ) {
+
+
+        UserFilter filter = new UserFilter();
+        filter.setName(name);
+        filter.setEmail(email);
+        filter.setRole(role);
+
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<UserResponseDTO> userPage = userService.getFilteredUser(filter, pageable);
+
+        model.addAttribute("users", userPage.getContent());
+        model.addAttribute("userPage", userPage);
+
+        // Pass filters back so form stays filled
+        model.addAttribute("currentName", name);
+        model.addAttribute("currentEmail", email);
+        model.addAttribute("currentRole", role);
+
+        model.addAttribute("currentSize", size);
         return "/user/list-users";
     }
+
+
+
+
 
     @GetMapping("/registerUserForm")
     public String addUser(Model model) {
