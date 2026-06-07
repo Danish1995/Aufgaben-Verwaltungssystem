@@ -262,4 +262,18 @@ Thymeleaf renders HTML
 th:value and th:selected restore filter values
         ↓
 User sees filtered results
+
+
+```
+
+# One-Sentence Summary
+
+```text
+→ User filters data 
+→ Spring creates TaskFilter 
+→ Specification builds filtering rules 
+→ Repository executes them with pagination 
+→ Hibernate generates SQL 
+→ Database returns matching tasks 
+→ Thymeleaf displays paginated results.
 ```
