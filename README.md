@@ -6,7 +6,7 @@ A full-stack task management application inspired by Jira, built with Spring Boo
 
 ## Screenshots
 
-> Add screenshots of your dashboard, task list, user management page, and Swagger UI here.
+> Screenshots of dashboard, task list, user management page, and Swagger UI will be added here.
 
 ---
 
