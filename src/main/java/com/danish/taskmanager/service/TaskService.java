@@ -14,11 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @Service
 public class TaskService {
 
@@ -33,25 +28,14 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-//    public List<TaskResponseDTO> getAllTask(){
-//
-//        List<Task> all = taskRepository.findAll();
-//        List<TaskResponseDTO> listAllTask= new ArrayList<>();
-//        for(Task task : all)
-//        {
-//           listAllTask.add(taskMapper.toDTO(task));
-//        }
-//
-//        return listAllTask;
-//    }
-
     public Page<TaskResponseDTO> getFilteredTasks(TaskFilter filter, Pageable pageable) {
         Specification<Task> spec = TaskSpecification.withFilters(filter);
         return taskRepository.findAll(spec, pageable)
                 .map(taskMapper::toDTO);
     }
 
-    public void deleteTask(Long taskID){
+
+    public void deleteTask(Long taskID) {
         taskRepository.deleteById(taskID);
     }
 
@@ -71,7 +55,7 @@ public class TaskService {
             task.setDueDate(dto.getDueDate());
             task.setAssignedUser(byId);
 
-            return   taskRepository.save(task);
+            return taskRepository.save(task);
 
         } else {
 
@@ -83,7 +67,7 @@ public class TaskService {
     }
 
 
-    public TaskRequestDTO taskUpdateValue(Long id){
+    public TaskRequestDTO taskUpdateValue(Long id) {
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found: " + id));

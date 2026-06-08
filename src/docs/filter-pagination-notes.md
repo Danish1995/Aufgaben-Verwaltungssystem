@@ -277,3 +277,84 @@ User sees filtered results
 → Database returns matching tasks 
 → Thymeleaf displays paginated results.
 ```
+# findAll(spec, pageable) and findAll()
+
+```text
+ taskRepository.findAll() give alls task, but JpaSpecificationExecutor<Task> provide overloaded functions
+ findAll(spec, pageable) contains Where contditions in spec, WHERE status='IN_PROGRESS' AND priority='HIGH'
+ pagealbe contain PageRequest.of(page, size, Sort.by("createdAt")) and then query will look like
+    SELECT * FROM tasks
+    WHERE status='IN_PROGRESS'
+    ORDER BY created_at DESC
+    LIMIT 5 OFFSET 0;
+    
+    public interface TaskRepository extends JpaRepository<Task, Long>,JpaSpecificationExecutor<Task> {}
+    JpaSpecificationExecutor adds:
+    findAll(spec)
+    findAll(spec, pageable)
+    count(spec)
+    exists(spec)
+```
+# TaskSpecificationClass
+
+```text
+
+TaskSpecification converts user filter values into a dynamic
+Specification<Task> (a dynamic WHERE clause).
+
+The controller receives filter values from request parameters
+(status, priority, assignedUserId, keyword) and stores them in a TaskFilter.
+
+The service calls:
+
+    TaskSpecification.withFilters(filter)
+
+which builds a Specification<Task> object.
+
+Spring Data JPA then uses:
+
+    taskRepository.findAll(spec, pageable)
+
+to automatically generate the SQL query.
+
+Example:
+
+    status = TODO
+    priority = HIGH
+    keyword = "spring"
+
+becomes roughly:
+
+    WHERE status = 'TODO'
+    AND priority = 'HIGH'
+    AND (
+        LOWER(title) LIKE '%spring%'
+        OR LOWER(description) LIKE '%spring%'
+    )
+
+root  -> represents the Task entity and its fields (table and columns)
+cb    -> CriteriaBuilder used to create conditions (=, LIKE, AND, OR)
+query -> the overall query being built (often unused in simple cases)
+
+Predicates are individual conditions collected into a list.
+
+At the end:
+
+    cb.and(predicates...)
+
+combines all predicates into one condition and returns it as a
+Specification<Task>.
+
+Flow:
+
+TaskFilter
+    ↓
+Specification<Task>
+    ↓
+taskRepository.findAll(spec, pageable)
+    ↓
+Generated SQL query
+    ↓
+Filtered and paginated task results
+
+```

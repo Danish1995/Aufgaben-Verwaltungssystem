@@ -10,15 +10,6 @@ import java.util.List;
 
 public class TaskSpecification {
 
-    /* Specification class creates the query conditions (WHERE clause), and Spring Data JPA/Hibernate uses those conditions to generate the actual SQL query.
-    * (root, query, cb) are the tools JPA gives  to build those conditions:
-    *   root → which entity/table and columns you're querying
-        cb (CriteriaBuilder) → creates conditions (=, LIKE, AND, OR)
-        query → the overall query being built (often unused in simple cases)
-    Without Root, CriteriaBuilder, and CriteriaQuery, a Specification wouldn't know what table, what columns,
-    or what conditions to generate. They are the building blocks JPA provides for constructing dynamic queries.
-
-    * */
 
     public static Specification<Task> withFilters(TaskFilter filter) {
         return (root, query, cb) -> {
