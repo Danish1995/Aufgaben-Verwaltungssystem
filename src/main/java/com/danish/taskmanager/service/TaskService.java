@@ -14,16 +14,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
 
+    /*Controllers are singletons in Spring — make dependencies private and final to express immutability and intent,
+     avoid accidental reassignment, and follow encapsulation*/
 
-    TaskRepository taskRepository;
-    TaskMapper taskMapper;
-    UserRepository userRepository;
+    private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
+    private final UserRepository userRepository;
 
     public TaskService(TaskRepository taskRepository, TaskMapper taskMapper, UserRepository userRepository) {
         this.taskRepository = taskRepository;

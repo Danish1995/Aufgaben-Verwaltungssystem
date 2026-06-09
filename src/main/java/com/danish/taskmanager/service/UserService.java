@@ -23,8 +23,8 @@ import java.util.Optional;
 public class UserService {
 
 
-    UserRepository userRepository;
-    UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;

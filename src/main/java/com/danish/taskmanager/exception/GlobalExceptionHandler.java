@@ -32,4 +32,13 @@ public class GlobalExceptionHandler {
 
                 ));
     }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<?> handleNullPointer(NullPointerException ex) {
+        return ResponseEntity.status(400).body(Map.of(
+                "success", false,
+                "message", "Invalid or missing required field",
+                "errorCode", "INVALID_INPUT"
+        ));
+    }
 }
