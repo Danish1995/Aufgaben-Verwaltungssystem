@@ -1,35 +1,32 @@
-    package com.danish.taskmanager.controller;
+package com.danish.taskmanager.controller;
 
-    import com.danish.taskmanager.dto.TaskFilter;
-    import com.danish.taskmanager.dto.TaskRequestDTO;
-    import com.danish.taskmanager.dto.TaskResponseDTO;
-    import com.danish.taskmanager.service.TaskService;
-    import com.danish.taskmanager.service.UserService;
-    import io.swagger.v3.oas.annotations.tags.Tag;
-    import jakarta.validation.Valid;
-    import org.springframework.data.domain.Page;
-    import org.springframework.data.domain.PageRequest;
-    import org.springframework.data.domain.Pageable;
-    import org.springframework.data.domain.Sort;
-    import org.springframework.stereotype.Controller;
-    import org.springframework.ui.Model;
-    import org.springframework.validation.BindingResult;
-    import org.springframework.web.bind.annotation.*;
+import com.danish.taskmanager.dto.TaskFilter;
+import com.danish.taskmanager.dto.TaskRequestDTO;
+import com.danish.taskmanager.dto.TaskResponseDTO;
+import com.danish.taskmanager.service.TaskService;
+import com.danish.taskmanager.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-    import java.util.List;
+@Controller
+@RequestMapping("/api")
+public class TaskController {
 
-    @Controller
-    @RequestMapping("/api")
-    public class TaskController {
+    // Make dependencies private and final to express immutability and intent, avoid accidental reassignment, and follow encapsulation.
+    private final TaskService taskService;
+    private final UserService userService;
 
-        // Make dependencies private and final to express immutability and intent, avoid accidental reassignment, and follow encapsulation.
-        private final TaskService taskService;
-        private final UserService userService;
-
-        public TaskController(TaskService taskService, UserService userService) {
-            this.taskService = taskService;
-            this.userService = userService;
-        }
+    public TaskController(TaskService taskService, UserService userService) {
+        this.taskService = taskService;
+        this.userService = userService;
+    }
 
 //        @GetMapping("/all-tasks")
 //        public String tasks(Model model) {
@@ -38,73 +35,75 @@
 //            return "task/list-tasks";
 //        }
 
-        @GetMapping("/tasks")
-        public String tasks(
-                @RequestParam(required = false) String status,
-                @RequestParam(required = false) String priority,
-                @RequestParam(required = false) Long assignedUserId,
-                @RequestParam(required = false) String keyword,
-                @RequestParam(defaultValue = "0") int page,
-                @RequestParam(defaultValue = "5") int size,
-                Model model) {
+    @GetMapping("/tasks")
+    public String tasks(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority,
+            @RequestParam(required = false) Long assignedUserId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model) {
 
-            TaskFilter filter = new TaskFilter();
-            filter.setStatus(status);
-            filter.setPriority(priority);
-            filter.setAssignedUserId(assignedUserId);
-            filter.setKeyword(keyword);
+        TaskFilter filter = new TaskFilter();
+        filter.setStatus(status);
+        filter.setPriority(priority);
+        filter.setAssignedUserId(assignedUserId);
+        filter.setKeyword(keyword);
 
-            Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-            Page<TaskResponseDTO> taskPage = taskService.getFilteredTasks(filter, pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<TaskResponseDTO> taskPage = taskService.getFilteredTasks(filter, pageable);
 
-            model.addAttribute("tasks", taskPage.getContent());
-            model.addAttribute("taskPage", taskPage);
-            model.addAttribute("users", userService.findAll());
+        model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("taskPage", taskPage);
+        model.addAttribute("users", userService.findAll());
 
-            // Pass filters back so form stays filled
-            model.addAttribute("currentStatus", status);
-            model.addAttribute("currentPriority", priority);
-            model.addAttribute("currentUser", assignedUserId);
-            model.addAttribute("currentKeyword", keyword);
-            model.addAttribute("currentSize", size);
+        // Pass filters back so form stays filled
+        model.addAttribute("currentStatus", status);
+        model.addAttribute("currentPriority", priority);
+        model.addAttribute("currentUser", assignedUserId);
+        model.addAttribute("currentKeyword", keyword);
+        model.addAttribute("currentSize", size);
 
-            return "task/list-tasks";
-        }
+        return "task/list-tasks";
+    }
 
-        @GetMapping("/add")
-        public String showAddForm(Model model) {
-            model.addAttribute("task", new TaskRequestDTO());
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        model.addAttribute("task", new TaskRequestDTO());
+        model.addAttribute("users", userService.findAll());
+        return "task/task-form";
+    }
+
+    // If you delete via a form (no JS), use POST to a delete endpoint
+    @PostMapping("/tasks/{id}")
+    public String deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return "redirect:/tasks";
+    }
+
+    @PostMapping("/tasks")
+    public String saveTask(@Valid @ModelAttribute("task") TaskRequestDTO dto, BindingResult result, Model model) {
+
+        if (result.hasErrors()) {
+            // re-populate users for the form so the template can render the assignee dropdown
             model.addAttribute("users", userService.findAll());
             return "task/task-form";
-        }
-
-        @DeleteMapping("/tasks/{id}")
-        public String deleteTask(@PathVariable Long id) {
-            taskService.deleteTask(id);
-
+        } else {
+            taskService.save(dto);
             return "redirect:/api/tasks";
         }
-
-        @PostMapping("/tasks")
-        public String saveTask(@Valid @ModelAttribute("task") TaskRequestDTO dto, BindingResult result) {
-
-            if (result.hasErrors()) {
-                return "task/task-form";
-            } else {
-                taskService.save(dto);
-                return "redirect:/api/tasks";
-            }
-        }
-
-        // For opening an edit form from a link, use @GetMapping.
-        @GetMapping("/tasks/{id}")
-        public String updateTask(@PathVariable("id") Long taskID, Model model) {
-
-            TaskRequestDTO requestDTO = taskService.taskUpdateValue(taskID);
-            model.addAttribute("task", requestDTO);
-            model.addAttribute("users", userService.findAll());
-
-
-            return "task/task-form";
-        }
     }
+
+    // For opening an edit form from a link, use @GetMapping.
+    @GetMapping("/tasks/{id}")
+    public String showEditForm(@PathVariable("id") Long taskID, Model model) {
+
+        TaskRequestDTO requestDTO = taskService.getTaskForEdit(taskID);
+        model.addAttribute("task", requestDTO);
+        model.addAttribute("users", userService.findAll());
+
+
+        return "task/task-form";
+    }
+}

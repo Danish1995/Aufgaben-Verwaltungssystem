@@ -106,7 +106,7 @@ class TaskControllerTest {
 
         user.setId(1L);
 
-        when(taskService.taskUpdateValue(1L)).thenReturn(existingTask);
+        when(taskService.getTaskForEdit(1L)).thenReturn(existingTask);
         when(userService.findAll()).thenReturn(List.of(user));
 
         // ACT + ASSERT

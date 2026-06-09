@@ -67,7 +67,7 @@ public class TaskService {
     }
 
 
-    public TaskRequestDTO taskUpdateValue(Long id) {
+    public TaskRequestDTO getTaskForEdit(Long id) {
 
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found: " + id));
