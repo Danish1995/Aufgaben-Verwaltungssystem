@@ -20,19 +20,14 @@
 
     @Controller
     @RequestMapping("/api")
-    @Tag(name = "Task Management", description = "CRUD operations for tasks")
     public class TaskController {
 
-
-        TaskService taskService;
-
-        UserService userService;
-
+        // Make dependencies private and final to express immutability and intent, avoid accidental reassignment, and follow encapsulation.
+        private final TaskService taskService;
+        private final UserService userService;
 
         public TaskController(TaskService taskService, UserService userService) {
-
             this.taskService = taskService;
-
             this.userService = userService;
         }
 
@@ -79,6 +74,7 @@
         @GetMapping("/add")
         public String showAddForm(Model model) {
             model.addAttribute("task", new TaskRequestDTO());
+            model.addAttribute("users", userService.findAll());
             return "task/task-form";
         }
 
