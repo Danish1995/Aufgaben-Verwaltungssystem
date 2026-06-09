@@ -1,59 +1,103 @@
-## Exception Handler Notes
+# Exception Flow Summary
 
-Purpose
+## Why AppException?
 
-- Short guide explaining why to use a domain-specific exception (`AppException`) together with a centralized
-  `@ControllerAdvice` (`GlobalExceptionHandler`), the runtime flow of exception handling in Spring MVC, and simple
-  examples comparing `AppException` vs `RuntimeException`.
+Java already provides:
 
-## AppException + GlobalExceptionHandler — Summary
+```java
+NullPointerException
+RuntimeException
+IllegalArgumentException
+```
 
-**AppException (the thrown object)**
+ `AppException` is created because custom fields are needed:
 
-- Purpose: represent a business/domain error (missing resource, validation failure, permission denied).
-- Carries domain info: human message, machine `errorCode`, intended HTTP `status`.
-- Used at the throw site (service/controller) to declare intent: "this is a handled business error, not a programming
-  bug."
+```java
+message
+errorCode
+statusCode
+```
 
-**GlobalExceptionHandler (`@ControllerAdvice`)**
+Example:
 
-- Purpose: central translator/formatter/policy point for all exceptions.
-- Responsibilities:
-    - Map exceptions to HTTP responses (status, body shape).
-    - Log the event (warn for business errors, error+stack for unexpected ones).
-    - Hide or enrich details (avoid leaking internals in production).
-    - Provide consistent response schema for the frontend to parse.
-    - Capture metrics / report to Sentry / add headers, etc.
-- Declared once and applied across controllers (optionally scoped).
+```java
+throw new AppException(
+    "User not found",
+    "USER_NOT_FOUND",
+    404
+);
+```
 
-### Concrete flow (how they work together)
+---
 
-1. Service: `throw new AppException("User not found", "USER_NOT_FOUND", 404);`
-2. DispatcherServlet sees the exception and asks Spring’s resolvers for a handler.
-3. `ExceptionHandlerExceptionResolver` finds the `@ExceptionHandler(AppException.class)` method in your
-   `@ControllerAdvice`.
-4. That handler builds a `ResponseEntity` (structured body, correct status) and returns it.
-5. Client receives consistent JSON and the system has logged/processed the error centrally.
+## Exception Flow
 
-10-step runtime flow (very important)
+```text
+Controller
+    ↓
+Service
+    ↓
+Repository
+```
 
-1. DispatcherServlet receives an HTTP request and finds a matching handler (controller method) via HandlerMapping.
-2. HandlerAdapter invokes the controller method.
-3. If the controller or service throws an exception, it bubbles back to DispatcherServlet.
-4. DispatcherServlet delegates exception resolution to HandlerExceptionResolverComposite (a chain of resolvers).
-5. ExceptionHandlerExceptionResolver (one resolver) checks for controller-local `@ExceptionHandler` methods.
-6. If not found, it checks `@ControllerAdvice` beans for `@ExceptionHandler` methods (respecting `@Order`).
-7. Resolver selects the most specific matching handler method by exception type (exact match → nearest superclass).
-8. Spring resolves the handler method arguments (HttpServletRequest, Exception, WebRequest, BindingResult, etc.) and
-   invokes the method.
-9. The handler returns a result (ResponseEntity, POJO, ModelAndView); Spring serializes it (JSON via
-   HttpMessageConverters) or renders a view.
-10. If no resolver handles the exception, other resolvers (ResponseStatusExceptionResolver,
-    DefaultHandlerExceptionResolver) try; if still unresolved, container-generated 500 is returned.
+If something goes wrong:
 
-Code examples
+```java
+throw new AppException(...);
+```
 
-1) AppException thrown in service + handled by GlobalExceptionHandler
+Spring automatically:
+
+```text
+Exception Thrown
+       ↓
+Looks for matching @ExceptionHandler(AppException.class)
+whatever method is annotated with that, it will call it, for example: if we call .orElseThrow(() -> new NullPointerException(...) 
+then it will look for @ExceptionHandler(NullPointerException.class) and call that method, if we call 
+.orElseThrow(() -> new RuntimeException(...) then it will look for @ExceptionHandler(RuntimeException.class) and call that method,
+and if it doesn't find it, it will look for @ExceptionHandler(Exception.class) and call that method, if it doesn't find that either, 
+it will return a default 500 error response.
+       ↓
+Calls that method
+       ↓
+Returns ResponseEntity
+```
+
+Example:
+
+```java
+@ExceptionHandler(AppException.class)
+```
+
+handles:
+
+```java
+throw new AppException(...)
+```
+
+---
+
+## GlobalExceptionHandler
+
+```java
+@ExceptionHandler(AppException.class)
+```
+
+Handles all AppExceptions.
+
+```java
+@ExceptionHandler(NullPointerException.class)
+```
+
+Handles all NullPointerExceptions.
+
+```java
+@ExceptionHandler(Exception.class)
+```
+
+Fallback for everything else.
+
+---
 
 // AppException (already in project)
 
@@ -158,16 +202,6 @@ Key differences demonstrated
 - AppException contains domain metadata (errorCode, status) and yields correct HTTP status and machine-readable error
   for clients.
 - RuntimeException produces a generic 500; frontend cannot distinguish a missing resource from server failures.
-
-Practical best practices (summary)
-
-- Throw `AppException` for expected business-level failures (not for programmer errors).
-- Use distinct `errorCode` values for the frontend to react programmatically.
-- Keep HTTP status codes accurate (404, 400, 403, 409, etc.).
-- Centralize formatting/logging in `@ControllerAdvice` — do not build HTTP responses in services.
-- Log unexpected exceptions at ERROR level in the handler; log business exceptions at WARN or INFO as appropriate.
-- Optionally, use specialized handlers for validation (`MethodArgumentNotValidException`), access denied, and
-  authentication failures.
 
 Set correct HTTP status codes
 
