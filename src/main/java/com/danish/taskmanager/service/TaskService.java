@@ -5,6 +5,7 @@ import com.danish.taskmanager.dto.TaskRequestDTO;
 import com.danish.taskmanager.dto.TaskResponseDTO;
 import com.danish.taskmanager.entity.Task;
 import com.danish.taskmanager.entity.User;
+import com.danish.taskmanager.exception.AppException;
 import com.danish.taskmanager.mapper.TaskMapper;
 import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.repository.UserRepository;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -34,6 +37,12 @@ public class TaskService {
                 .map(taskMapper::toDTO);
     }
 
+    public List<TaskResponseDTO> getAllTask() {
+        return taskRepository.findAll().stream()
+                .map(taskMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
 
     public void deleteTask(Long taskID) {
         taskRepository.deleteById(taskID);
@@ -41,11 +50,13 @@ public class TaskService {
 
     public Task save(TaskRequestDTO dto) {
 
-        User byId = userRepository.findById(dto.getAssignedUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+        User byId = userRepository.findById(dto.getAssignedUserId())
+                .orElseThrow(() -> new AppException("User not found", "USER_NOT_FOUND", 404));
         if (dto.getId() != null) {
             // Update task conditions
 
-            Task task = taskRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Task not found"));
+            Task task = taskRepository.findById(dto.getId())
+                    .orElseThrow(() -> new AppException("Task not found", "TASK_NOT_FOUND", 404));
 
             task.setId(dto.getId());
             task.setTitle(dto.getTitle());
@@ -70,7 +81,7 @@ public class TaskService {
     public TaskRequestDTO getTaskForEdit(Long id) {
 
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found: " + id));
+                .orElseThrow(() -> new AppException("Task not found: " + id, "TASK_NOT_FOUND", 404));
         return taskMapper.toRequestDTO(task);
     }
 }
