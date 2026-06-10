@@ -79,10 +79,14 @@ public class UserController {
         model.addAttribute("currentRole", role);
 
         model.addAttribute("currentSize", size);
-        return "/user/list-users";
+        return "user/list-users";
     }
 
-
+    @PostMapping("/users/register")
+    public String registerUser(@ModelAttribute("adduser") UserRequestDTO dto) {
+        userService.addUser(dto);
+        return "redirect:/auth/loginForm";
+    }
 
 
 
@@ -90,13 +94,13 @@ public class UserController {
     public String addUser(Model model) {
         UserRequestDTO newUser = new UserRequestDTO();
         model.addAttribute("adduser", newUser);
-        return "/user/user-form";
+        return "user/user-form";
     }
 
     @GetMapping("/users/{userID}")
     public String getSingleUser(@PathVariable Long userID, Model model) {
         model.addAttribute("adduser", userService.findUserForForm(userID));
-        return "/user/user-form";
+        return "user/user-form";
     }
 
 
@@ -122,7 +126,7 @@ public class UserController {
 
         // Operations
         if (result.hasErrors()) {
-            return "/user/user-form";
+            return "user/user-form";
         }
         // Operation after all validation
         if (dto.getId() == null) {
@@ -156,7 +160,7 @@ public class UserController {
         UserResponseDTO byEmail = userService.findBYEmail(authentication.getName());
         model.addAttribute("user", byEmail);
 
-        return "/user/user-profile";
+        return "user/user-profile";
     }
 
 }

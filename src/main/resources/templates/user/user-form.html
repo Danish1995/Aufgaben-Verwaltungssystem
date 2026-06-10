@@ -39,7 +39,7 @@
 
     <h3 th:text="${adduser.id != null} ? 'Update User' : 'Add User'">Add User</h3>
 
-    <form th:action="@{/users}" th:object="${adduser}" method="POST">
+    <form th:action="@{/users/register}" th:object="${adduser}" method="POST">
 
         <!-- ID (hidden) -->
         <input type="hidden" th:if="*{id != null}" th:field="*{id}">

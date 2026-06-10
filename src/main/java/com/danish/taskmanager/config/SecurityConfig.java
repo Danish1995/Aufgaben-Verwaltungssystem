@@ -28,6 +28,10 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/auth/loginForm").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/users").hasAnyRole("ADMIN", "MEMBER", "MANAGER")
 
                         .anyRequest().authenticated()

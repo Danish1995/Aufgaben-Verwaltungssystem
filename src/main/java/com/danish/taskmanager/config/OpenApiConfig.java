@@ -18,5 +18,6 @@ public class OpenApiConfig {
                         .description("Mini Jira project — task and user management")
                         .contact(new Contact()
                                 .name("Danish")));
+
     }
 }
