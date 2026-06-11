@@ -4,7 +4,6 @@ import com.danish.taskmanager.dto.*;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.service.UserService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 public class UserController {
@@ -83,8 +81,19 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public String registerUser(@ModelAttribute("adduser") UserRequestDTO dto) {
+    public String registerUser(@ModelAttribute("adduser") UserRequestDTO dto, org.springframework.security.core.Authentication authentication) {
         userService.addUser(dto);
+
+        // If the current user is authenticated and has ADMIN role (admin adding a user), redirect back to the user list.
+        if (authentication != null && authentication.isAuthenticated()) {
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            if (isAdmin) {
+                return "redirect:/users";
+            }
+        }
+
+        // Otherwise (self-registration / anonymous), redirect to login page so the new user can sign in.
         return "redirect:/auth/loginForm";
     }
 

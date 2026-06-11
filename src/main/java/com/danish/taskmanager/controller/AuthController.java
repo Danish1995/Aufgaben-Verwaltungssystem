@@ -37,13 +37,4 @@ public class AuthController {
         userService.registerUser(dto);
         return "redirect:/users";
     }
-
-    @GetMapping("/registerNewUserForm")
-    public String registerNewUserForm(Model model) {
-        UserRequestDTO newUser = new UserRequestDTO();
-        model.addAttribute("registerUser", newUser);
-        return "user/register-user";
-    }
-
-
 }
