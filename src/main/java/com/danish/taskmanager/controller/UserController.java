@@ -80,15 +80,30 @@ public class UserController {
         model.addAttribute("currentRole", role);
 
         model.addAttribute("currentSize", size);
-        
+
         return "user/list-users";
     }
 
     @PostMapping("/users/register")
-    public String registerUser(@ModelAttribute("adduser") UserRequestDTO dto, org.springframework.security.core.Authentication authentication) {
+    public String registerUser(@Valid @ModelAttribute("adduser") UserRequestDTO dto,
+                               BindingResult result,
+                               org.springframework.security.core.Authentication authentication,
+                               Model model) {
+
+        // Validate duplicate email for registration
+        if (dto.getId() == null && userRepository.existsByEmail(dto.getEmail())) {
+            result.rejectValue("email", "error.email", "Email already exists");
+        }
+
+        // If validation errors, return the form so Thymeleaf shows field errors
+        if (result.hasErrors()) {
+            model.addAttribute("adduser", dto);
+            return "user/user-form";
+        }
+
         userService.addUser(dto);
 
-        // If the current user is authenticated and has ADMIN role (admin adding a user), redirect back to the user list.
+        // If current authenticated user is ADMIN (admin adding user), redirect to users list
         if (authentication != null && authentication.isAuthenticated()) {
             boolean isAdmin = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -97,7 +112,7 @@ public class UserController {
             }
         }
 
-        // Otherwise (self-registration / anonymous), redirect to login page so the new user can sign in.
+        // Otherwise (self-registration), redirect to login so the new user can sign in
         return "redirect:/auth/loginForm";
     }
 
