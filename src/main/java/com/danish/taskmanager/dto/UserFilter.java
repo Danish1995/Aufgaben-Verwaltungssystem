@@ -10,5 +10,6 @@ import lombok.Setter;
         private String name;
         private String email;
         private String Role;
+        private String excludeEmail; // Exclude a specific email from results (e.g., current user)
 
     }

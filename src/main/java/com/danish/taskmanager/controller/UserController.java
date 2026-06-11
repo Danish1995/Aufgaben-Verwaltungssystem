@@ -58,12 +58,15 @@ public class UserController {
                                @RequestParam(defaultValue = "5") int size,
                                Model model ) {
 
+        // Get the current logged-in user's email
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserEmail = authentication != null ? authentication.getName() : null;
 
         UserFilter filter = new UserFilter();
         filter.setName(name);
         filter.setEmail(email);
         filter.setRole(role);
-
+        filter.setExcludeEmail(currentUserEmail); // Exclude current user from list
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<UserResponseDTO> userPage = userService.getFilteredUser(filter, pageable);
@@ -77,6 +80,7 @@ public class UserController {
         model.addAttribute("currentRole", role);
 
         model.addAttribute("currentSize", size);
+        
         return "user/list-users";
     }
 

@@ -41,6 +41,11 @@ public class UserSpecification {
                         User.Role.valueOf(filter.getRole())));
             }
 
+            // Exclude a specific email (e.g., current logged-in user)
+            if (filter.getExcludeEmail() != null && !filter.getExcludeEmail().isBlank()) {
+                predicates.add(cb.notEqual(root.get("email"), filter.getExcludeEmail()));
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
