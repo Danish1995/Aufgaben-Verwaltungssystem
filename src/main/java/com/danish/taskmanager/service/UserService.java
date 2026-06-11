@@ -5,6 +5,7 @@ import com.danish.taskmanager.entity.Task;
 import com.danish.taskmanager.entity.User;
 import com.danish.taskmanager.exception.AppException;
 import com.danish.taskmanager.mapper.UserMapper;
+import com.danish.taskmanager.repository.TaskRepository;
 import com.danish.taskmanager.repository.UserRepository;
 import com.danish.taskmanager.specification.TaskSpecification;
 import com.danish.taskmanager.specification.UserSpecification;
@@ -25,10 +26,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final TaskRepository taskRepository;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, TaskRepository taskRepository) {
         this.userRepository = userRepository;
         this.userMapper=userMapper;
+        this.taskRepository = taskRepository;
     }
 
     public List<UserResponseDTO> findAll() {
@@ -91,6 +94,13 @@ public class UserService {
 
     public User deleteUser(Long userID) {
         Optional<User> userByID = userRepository.findById(userID);
+        if (taskRepository.existsByAssignedUserId(userID)) {
+            throw new AppException(
+                    "Cannot delete user: user has assigned tasks. Reassign or remove tasks first.",
+                    "USER_HAS_TASKS",
+                    409
+            );
+        }
         if (userByID.isPresent()) {
             userRepository.delete(userByID.get());
             return userByID.get();
