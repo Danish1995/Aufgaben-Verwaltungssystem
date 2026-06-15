@@ -49,6 +49,16 @@ A full-stack task management application inspired by Jira, built with Spring Boo
 * Interactive Swagger UI documentation
 * OpenAPI 3.0 integration via SpringDoc
 
+### Docker & Containerization
+
+* Multi-stage Docker build using Java 21 (Eclipse Temurin)
+* Docker Compose setup for application and MySQL database
+* Automated container networking and service orchestration
+* Persistent MySQL storage using Docker volumes
+* Environment-based configuration via Docker Compose variables
+* Spring Boot Actuator health checks for container monitoring
+* Pre-seeded demo users and tasks for Docker profile
+* Isolated and reproducible development environment
 ### Testing
 
 * Controller tests using MockMvc
