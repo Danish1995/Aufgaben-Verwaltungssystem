@@ -272,7 +272,6 @@ src/main/java/com/danish/taskmanager/
 
 ## Future Improvements
 
-* Docker and Docker Compose support
 * GitHub Actions CI/CD pipeline
 * Task analytics dashboard
 * Project management module
