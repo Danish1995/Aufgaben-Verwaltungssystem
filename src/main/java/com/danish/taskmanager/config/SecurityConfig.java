@@ -30,14 +30,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/auth/loginForm").permitAll()
                         .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/users").hasAnyRole("ADMIN", "MEMBER", "MANAGER")
 
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
-                .formLogin(form -> form
+                    .formLogin(form -> form
                         .loginPage("/auth/loginForm")
                         .loginProcessingUrl("/auth/login") //The url is set here Spring Security treats THIS URL as the login endpoint
                         .usernameParameter("email")          // tell Spring to read 'email' field
