@@ -3,6 +3,7 @@ package com.danish.taskmanager.config;
 import com.danish.taskmanager.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,18 +24,24 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/registerUserForm").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/v1/**").permitAll()
-                        .requestMatchers("/auth/loginForm").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
+                        // Public: login & registration
+                        .requestMatchers("/auth/loginForm", "/auth/login").permitAll()
+                        .requestMatchers("/registerUserForm", "/users/register").permitAll()
+
+                        // Public: Swagger docs
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+
+                        // Actuator: health/info public, rest ADMIN only
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
-                        .requestMatchers("/users/register").permitAll()
+
+                        // REST API: DELETE only for ADMIN (other API calls → login required, see last rule)
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("ADMIN")
+
+                        // Web pages
                         .requestMatchers("/users").hasAnyRole("ADMIN", "MEMBER", "MANAGER")
 
+                        // Everything else: must be logged in
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
