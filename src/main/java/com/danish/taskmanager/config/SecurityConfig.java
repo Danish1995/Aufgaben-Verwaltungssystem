@@ -23,7 +23,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
+                // CSRF on for browser (session/cookie) pages; Thymeleaf th:action forms get the token automatically.
+                // Only the stateless REST API (HTTP Basic, no browser session needed) is exempt.
+                // Note: web task pages live under /api/tasks, so only /api/v1/** is ignored here.
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/**"))
                 .authorizeHttpRequests(auth -> auth
                         // Public: login & registration
                         .requestMatchers("/auth/loginForm", "/auth/login").permitAll()
