@@ -16,8 +16,13 @@ public class TaskSpecification {
             List<Predicate> predicates = new ArrayList<>();
 
             if (filter.getStatus() != null && !filter.getStatus().isBlank()) {
-                predicates.add(cb.equal(root.get("status"),
-                        Task.Status.valueOf(filter.getStatus())));
+                predicates.add(cb.equal(root.get("status"), Task.Status.valueOf(filter.getStatus())));
+                // predicates.add will look like [status = 'DONE'] which is equals to WHERE status = 'DONE'
+                // to match enum type calling valueOf() method to convert string to enum
+                // Example: if filter.getStatus() returns "OPEN", it will be converted to Task.Status.OPEN
+                // cb.equal() is writing status = 'DONE' in SQL query.
+                // predicaes is a list of conditions that will be combined with AND in the final query
+
             }
 
             if (filter.getPriority() != null && !filter.getPriority().isBlank()) {
